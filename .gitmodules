@@ -1,0 +1,15 @@
+[submodule "src/lib/glfw"]
+	path = src/lib/glfw
+	url = git://github.com/glfw/glfw.git
+[submodule "src/lib/glm"]
+	path = src/lib/glm
+	url = git://github.com/g-truc/glm.git
+[submodule "src/lib/glad"]
+	path = src/lib/glad
+	url = git://github.com/Dav1dde/glad.git
+[submodule "src/lib/stb"]
+	path = src/lib/stb
+	url = git://github.com/nothings/stb.git
+[submodule "src/lib/assimp"]
+	path = src/lib/assimp
+	url = git://github.com/assimp/assimp.git
