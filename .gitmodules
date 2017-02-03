@@ -1,15 +1,20 @@
 [submodule "src/lib/glfw"]
 	path = src/lib/glfw
 	url = git://github.com/glfw/glfw.git
+	ignore = dirty
 [submodule "src/lib/glm"]
 	path = src/lib/glm
 	url = git://github.com/g-truc/glm.git
+	ignore = dirty
 [submodule "src/lib/glad"]
 	path = src/lib/glad
 	url = git://github.com/Dav1dde/glad.git
+	ignore = dirty
 [submodule "src/lib/stb"]
 	path = src/lib/stb
 	url = git://github.com/nothings/stb.git
+	ignore = dirty
 [submodule "src/lib/assimp"]
 	path = src/lib/assimp
 	url = git://github.com/assimp/assimp.git
+	ignore = dirty
