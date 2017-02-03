@@ -1,9 +1,3 @@
-src/lib/assimp
-src/lib/glad
-src/lib/glfw
-src/lib/glm
-src/lib/stb
-
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
