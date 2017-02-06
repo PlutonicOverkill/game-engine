@@ -1,4 +1,4 @@
-# adapted from https://github.com/polytonic/glitter
+# adapted from https://github.com/polytonic/glitter - bullet removed for now
 cmake_minimum_required(VERSION 3.0)
 project(game_engine)
 

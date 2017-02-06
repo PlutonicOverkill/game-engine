@@ -1,2 +1,2 @@
-# super-duper-engine
+# game-engine
 OpenGL-based renderer/engine thing

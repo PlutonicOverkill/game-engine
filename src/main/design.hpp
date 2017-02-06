@@ -1,3 +1,8 @@
+// if constexpr
+// if(int x = 42; true != false)
+// auto [a , b , c] = getvalues();
+// template <auto v> struct S;
+
 namespace fs = std::experimental::filesystem;
 
 class Context {
@@ -15,7 +20,8 @@ class Renderer {
 public:
 	
 private:
-	Context ctx; // MUST be constructed in this order
+	Window win; // MUST be constructed in this order
+	Context ctx;
 	Asset_factory data;
 };
 
@@ -32,28 +38,31 @@ private:
 	fs::path filename;
 };
 
-class gl_Asset : public Asset {};
-
-class Texture : public gl_Asset {
-public:
-	
+class gl_Asset : public Asset {
 private:
 	GLuint id;
 };
 
+class Texture : public gl_Asset {
+public:
+};
+
+// mesh has to resend geometry data,
+// so has to be stored in the object.
 class Mesh : public gl_Asset {
 public:
-	
-private:
-	GLuint id;
 };
 
 class Shader : public gl_Asset {
 public:
-	
-private:
-	GLuint id;
 };
+
+// scene graph:
+// base node with std::list of children
+// geometry node
+// transform node
+// animated node: rotation, scaling, translating, animtransform
+// switch node
 
 /* when creating Shader:
  * first check if equivilant object exists
@@ -65,7 +74,7 @@ private:
 
 // from http://gafferongames.com/game-physics/fix-your-timestep/ 
 double t = 0.0; // time the simulation has been running (physics time)
-double dt = 0.01; // constant physics update rate
+constexpr double dt = 0.01; // constant physics update rate
 
 double currentTime = hires_time_in_seconds(); // realtime
 double accumulator = 0.0; // "leftover" time used for interpolating
@@ -73,29 +82,28 @@ double accumulator = 0.0; // "leftover" time used for interpolating
 State previous; // previous game state - used for interpolating
 State current; // current game state
 
-while ( !quit )
-{
-    double newTime = time();
-    double frameTime = newTime - currentTime;
-    if ( frameTime > 0.25 ) // if sim gets too far behind, get it back up to date
-        frameTime = 0.25;
-    currentTime = newTime;
+constexpr double maxtime = 0.25;
 
-    accumulator += frameTime; // amount of time to simulate
+while (!quit) {
+	double newTime = time();
+	double frameTime = newTime - currentTime;
+	if(frameTime > maxtime) // if sim gets too far behind, get it back up to date
+		frameTime = maxtime;
+	currentTime = newTime;
 
-    while ( accumulator >= dt )
-    {
-        previousState = currentState;
-        integrate( currentState, t, dt );
-        t += dt;
-        accumulator -= dt;
-    }
+	accumulator += frameTime; // amount of time to simulate
 
-    const double alpha = accumulator / dt;
+	while (accumulator >= dt) {
+		previousState = currentState;
+		integrate(currentState, t, dt);
+		t += dt;
+		accumulator -= dt;
+	}
 
-    State state = currentState * alpha + 
-        previousState * ( 1.0 - alpha );
+	const double alpha = accumulator / dt;
 
-    render( state );
+	State state = currentState * alpha + 
+		previousState * (1.0 - alpha);
+
+	render(state);
 }
- 
