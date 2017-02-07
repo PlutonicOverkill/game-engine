@@ -7,6 +7,8 @@ rem change the '-G' option if you're using a compiler other than Visual Studio 1
 rem change to working directory
 CD /D %~dp0
 
+CALL gen_gl_header.bat
+
 rem 32bit build
 cmake -E make_directory build
 cd build
