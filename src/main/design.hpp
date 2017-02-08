@@ -8,17 +8,17 @@ namespace fs = std::experimental::filesystem;
 class Context {
 	Context(); // init and shutdown opengl
 	~Context();
-	
+
 	Context(const Context&) = delete;
 	Context& operator=(const Context&) = delete;
-	
+
 	Context(Context&&) = default;
 	Context& operator=(Context&&) = default;
-}
+};
 
 class Renderer {
 public:
-	
+
 private:
 	Window win; // MUST be constructed in this order
 	Context ctx;
@@ -27,12 +27,12 @@ private:
 
 template<typename T>
 class Asset_factory {
-	
+
 };
 
 class Asset {
 public:
-	virtual Asset() = 0;
+	Asset() = 0;
 	virtual ~Asset() = 0;
 private:
 	fs::path filename;
@@ -84,7 +84,7 @@ State current; // current game state
 
 constexpr double maxtime = 0.25;
 
-while (!quit) {
+while(!quit) {
 	double newTime = time();
 	double frameTime = newTime - currentTime;
 	if(frameTime > maxtime) // if sim gets too far behind, get it back up to date
@@ -93,7 +93,7 @@ while (!quit) {
 
 	accumulator += frameTime; // amount of time to simulate
 
-	while (accumulator >= dt) {
+	while(accumulator >= dt) {
 		previousState = currentState;
 		integrate(currentState, t, dt);
 		t += dt;
@@ -102,7 +102,7 @@ while (!quit) {
 
 	const double alpha = accumulator / dt;
 
-	State state = currentState * alpha + 
+	State state = currentState * alpha +
 		previousState * (1.0 - alpha);
 
 	render(state);
