@@ -1,3 +1,6 @@
+# visual studio creates this directory when opening the project as a folder
+.vs
+
 build
 build64
 
