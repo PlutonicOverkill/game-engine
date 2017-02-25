@@ -3,6 +3,7 @@
 
 #include "system.hpp"
 #include "entity.hpp"
+#include "window.hpp"
 
 #include <vector>
 #include <memory>
@@ -20,7 +21,7 @@ namespace Glare {
 		void run();
 
 	private:
-		GLFWwindow* window;
+		Video::Window win;
 
 		Subsystem renderer;
 		Subsystem physics;

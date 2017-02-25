@@ -46,8 +46,7 @@ set(PROJECT_HEADERS src/game/components/render.hpp
 					 src/glare/game.hpp
 					 src/glare/window.hpp
 					 src/glare/system.hpp
-					 src/glare/resource.hpp
-					 src/glare/window_impl.hpp)
+					 src/glare/resource.hpp)
 						  
 set(PROJECT_SOURCES src/game/components/render.cpp
 					 src/game/main.cpp
