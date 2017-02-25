@@ -44,17 +44,17 @@ set(PROJECT_HEADERS src/game/components/render.hpp
 					 src/glare/component.hpp
 					 src/glare/entity.hpp
 					 src/glare/game.hpp
-					 src/glare/opengl.hpp
+					 src/glare/window.hpp
 					 src/glare/system.hpp
 					 src/glare/resource.hpp
-					 src/glare/opengl_impl.hpp)
+					 src/glare/window_impl.hpp)
 						  
 set(PROJECT_SOURCES src/game/components/render.cpp
 					 src/game/main.cpp
 					 src/glare/component.cpp
 					 src/glare/entity.cpp
 					 src/glare/game.cpp
-					 src/glare/opengl.cpp
+					 src/glare/window.cpp
 					 src/glare/system.cpp
 					 src/glare/resource.cpp)
 
