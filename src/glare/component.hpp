@@ -27,7 +27,7 @@ namespace Glare {
 	template<typename T, typename... Args>
 	Component_ptr make_component(Args&&... args)
 	{
-		return std::move(std::make_unique<T>(std::forward<Args>(args)...));
+		return std::make_unique<T>(std::forward<Args>(args)...);
 	}
 }
 
