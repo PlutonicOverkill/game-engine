@@ -9,18 +9,18 @@ CD /D %~dp0
 
 CALL gen_gl_header.bat
 
-rem 32bit build
-cmake -E make_directory build
-cd build
-cmake -G "Visual Studio 15 2017" ..
-cmake --build . --config Debug
-cmake --build . --config Release
-cd ..
+REM rem 32bit build
+REM cmake -E make_directory build
+REM cd build
+REM cmake -G "Visual Studio 15 2017" ..
+REM rem cmake --build . --config Debug
+REM rem cmake --build . --config Release
+REM cd ..
 
 rem 64bit build
 cmake -E make_directory build64
 cd build64
 cmake -G "Visual Studio 15 2017 Win64" ..
-cmake --build . --config Debug
-cmake --build . --config Release
+rem cmake --build . --config Debug
+rem cmake --build . --config Release
 cd ..
