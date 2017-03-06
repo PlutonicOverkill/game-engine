@@ -7,12 +7,14 @@
 
 namespace Game {
 	namespace Component {
+		struct Texture {};
+		struct Mesh {};
+		struct Shader {};
+
 		struct Renderable : Glare::Component {
 			Texture tex;
 			Mesh mesh;
 			Shader shader;
-
-			std::string name() override;
 		};
 	}
 }

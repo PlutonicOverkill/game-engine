@@ -16,7 +16,10 @@ namespace Glare {
 		*/
 		class Window {
 		public:
-			Window(int width, int height, std::string title, bool fullscreen, bool debug);
+			Window(int width, int height, std::string title, bool fullscreen, bool debug = false);
+
+			Window(Window&&) noexcept;
+			Window& operator=(Window&&) noexcept;
 
 			~Window();
 		private:

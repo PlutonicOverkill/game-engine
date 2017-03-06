@@ -26,7 +26,9 @@ namespace Glare {
 		Subsystem renderer;
 		Subsystem physics;
 
-		Entity_container ents;
+		Factory<Component> component_maker;
+
+		Entity::Entity_container ents;
 	};
 }
 

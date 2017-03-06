@@ -15,7 +15,7 @@ namespace Glare {
 	class System {
 	public:
 		// does the actual work of the system
-		virtual void update(Entity ent, double dt) = 0;
+		virtual void update(Entity::Entity ent, double dt) = 0;
 
 		// returns the names of the components required
 		// for an entity to be operated on by this system
@@ -26,11 +26,14 @@ namespace Glare {
 
 		virtual std::string name() = 0;
 
-		// copying disabled to prevent slicing
+		// disabled to prevent slicing
 		System(const System&) = delete;
 		System& operator=(const System&) = delete;
 
-		virtual ~System();
+		System(System&&) = delete;
+		System& operator=(System&&) = delete;
+
+		virtual ~System() {};
 	};
 
 	/*
@@ -41,7 +44,7 @@ namespace Glare {
 	*/
 	class Subsystem {
 	public:
-		void update(double dt, Entity_container& ents)
+		void update(double dt, Entity::Entity_container& ents)
 		{
 			for(const auto& sys : systems) {
 				auto check = sys.second->components();

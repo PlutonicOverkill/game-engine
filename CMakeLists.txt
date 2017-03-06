@@ -46,7 +46,9 @@ set(PROJECT_HEADERS src/game/components/render.hpp
 					 src/glare/game.hpp
 					 src/glare/window.hpp
 					 src/glare/system.hpp
-					 src/glare/resource.hpp)
+					 src/glare/resource.hpp
+					 src/glare/factory.hpp
+)
 						  
 set(PROJECT_SOURCES src/game/components/render.cpp
 					 src/game/main.cpp
@@ -55,16 +57,20 @@ set(PROJECT_SOURCES src/game/components/render.cpp
 					 src/glare/game.cpp
 					 src/glare/window.cpp
 					 src/glare/system.cpp
-					 src/glare/resource.cpp)
+					 src/glare/resource.cpp
+					 src/glare/factory.cpp
+)
 
 set(PROJECT_SHADERS src/shaders/main.frag
-					 src/shaders/main.vert)
+					 src/shaders/main.vert
+)
 						  
 set(PROJECT_CONFIGS CMakeLists.txt
                           Readme.md
                          .gitattributes
                          .gitignore
-                         .gitmodules)
+                         .gitmodules
+)
 
 file(COPY ${PROJECT_SHADERS} DESTINATION ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/shaders)
 
@@ -79,6 +85,7 @@ add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS}
 target_link_libraries(${PROJECT_NAME} assimp glfw
                       ${GLFW_LIBRARIES} ${GLAD_LIBRARIES}
                       # BulletDynamics BulletCollision LinearMath
-					  )
+)
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})

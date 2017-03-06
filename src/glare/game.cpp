@@ -16,9 +16,14 @@ void Glare::Game::render(double dt)
 
 void Glare::Game::run()
 {
-	// adapted from http://gafferongames.com/game-physics/fix-your-timestep/ 
-	auto t = std::chrono::nanoseconds::zero(); // time the simulation has been running (physics time)
+	// adapted from http://gafferongames.com/game-physics/fix-your-timestep/
+
+	// time the simulation has been running (physics time)
+	auto t = std::chrono::nanoseconds::zero();
+
 	constexpr std::chrono::milliseconds dt{16}; // constant physics update rate
+
+	constexpr double timescale{1.0}; // multiplier to update time by
 
 	auto current_time = std::chrono::steady_clock::now(); // realtime
 	auto accumulator = std::chrono::nanoseconds::zero(); // "leftover" time used for interpolating
@@ -35,7 +40,9 @@ void Glare::Game::run()
 			frame_time = max_time;
 		current_time = new_time;
 
-		accumulator += frame_time; // amount of time to simulate
+		// we can't add a double and a long long so we need a cast
+		accumulator += std::chrono::duration_cast<decltype(accumulator)>
+			(frame_time * timescale); // amount of time to simulate
 
 		while(accumulator >= dt) {
 			// previousState = currentState;

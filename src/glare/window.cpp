@@ -8,21 +8,21 @@
 #include "GLFW/glfw3.h"
 
 #include <utility>
+#include <iostream>
+#include <string>
 
 #define GLM_FORCE_RADIANS 1
 
-void APIENTRY gl_callback(GLenum source,
-						  GLenum type,
-						  GLuint id,
-						  GLenum severity,
-						  GLsizei length,
-						  const GLchar* message,
-						  const void* userParam)
-{
+void APIENTRY gl_callback(GLenum,
+						  GLenum,
+						  GLuint,
+						  GLenum,
+						  GLsizei,
+						  const GLchar*,
+						  const void*);
 
-}
-
-Glare::Video::Window::Window(int width, int height, std::string title, bool fullscreen, bool debug)
+Glare::Video::Window::Window(int width, int height, std::string title,
+							 bool fullscreen, bool debug = false)
 {
 	glfwDefaultWindowHints(); // so hints set before can't interfere
 	
@@ -41,11 +41,30 @@ Glare::Video::Window::Window(int width, int height, std::string title, bool full
 	
 	glfwMakeContextCurrent(win);
 	gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+
+	if(debug) {
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		glDebugMessageCallback(gl_callback, nullptr);
+
+		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+	}
+}
+
+Glare::Video::Window::Window(Window&& w) noexcept
+	:win{w.win}
+{
+	w.win = nullptr;
+}
+
+Glare::Video::Window& Glare::Video::Window::operator=(Window&& w) noexcept
+{
+	std::swap(win, w.win);
+	return *this;
 }
 
 Glare::Video::Window::~Window()
 {
-	glfwDestroyWindow(win);
+	if(win) glfwDestroyWindow(win);
 }
 
 void attach_shader
@@ -122,4 +141,75 @@ int main()
 		0, texture, 0, false, 0, GL_READ_ONLY, GL_RGBA8);
 	glProgramUniform1i(program, 0, 0);
 	glBindVertexArray(array);
+}
+
+void APIENTRY gl_callback(GLenum source,
+						  GLenum type,
+						  GLuint id,
+						  GLenum severity,
+						  GLsizei /*length*/,
+						  const GLchar* message,
+						  const void* /*userParam*/)
+{
+	std::string source_msg;
+	std::string type_msg;
+	std::string severity_msg;
+
+	switch(source) {
+	case GL_DEBUG_SOURCE_API: source_msg = "API";
+		break;
+	case GL_DEBUG_SOURCE_WINDOW_SYSTEM: source_msg = "Window system";
+		break;
+	case GL_DEBUG_SOURCE_SHADER_COMPILER: source_msg = "Shader compiler";
+		break;
+	case GL_DEBUG_SOURCE_THIRD_PARTY: source_msg = "Third party";
+		break;
+	case GL_DEBUG_SOURCE_APPLICATION: source_msg = "Application";
+		break;
+	case GL_DEBUG_SOURCE_OTHER: source_msg = "Other";
+		break;
+	default: source_msg = "None";
+	}
+
+	switch(type) {
+	case GL_DEBUG_TYPE_ERROR: type_msg = "Error";
+		break;
+	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: type_msg = "Deprecated behavior";
+		break;
+	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: type_msg = "Undefined behavior";
+		break;
+	case GL_DEBUG_TYPE_PORTABILITY: type_msg = "Portability";
+		break;
+	case GL_DEBUG_TYPE_PERFORMANCE: type_msg = "Performance";
+		break;
+	case GL_DEBUG_TYPE_MARKER: type_msg = "Marker";
+		break;
+	case GL_DEBUG_TYPE_PUSH_GROUP: type_msg = "Push group";
+		break;
+	case GL_DEBUG_TYPE_POP_GROUP: type_msg = "Pop group";
+		break;
+	case GL_DEBUG_TYPE_OTHER: type_msg = "Other";
+		break;
+	default: type_msg = "None";
+	}
+
+	switch(severity) {
+	case GL_DEBUG_SEVERITY_HIGH: severity_msg = "High";
+		break;
+	case GL_DEBUG_SEVERITY_MEDIUM: severity_msg = "Medium";
+		break;
+	case GL_DEBUG_SEVERITY_LOW: severity_msg = "Low";
+		break;
+	case GL_DEBUG_SEVERITY_NOTIFICATION: severity_msg = "Notification";
+		break;
+	default: severity_msg = "None";
+	}
+
+	std::cerr << "OpenGL Error:\n"
+		<< "ID:\t" << id
+		<< "Source:\t" << source_msg
+		<< "Type:\t" << type_msg
+		<< "Severity:\t" << severity_msg
+		<< "Message:\n"
+		<< message << '\n';
 }
