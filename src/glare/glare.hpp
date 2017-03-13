@@ -100,13 +100,15 @@ namespace Glare {
 				iterator_base operator+(difference_type);
 				iterator_base operator-(difference_type);
 
-				template<typename U>
+				template<bool U>
 				difference_type operator-(iterator_base<U>);
 
-				template<typename U>
+				template<bool U>
 				bool operator==(iterator_base<U>);
-				template<typename U>
+				template<bool U>
 				bool operator!=(iterator_base<U>);
+
+				explicit operator bool();
 			private:
 				std::conditional_t<Is_const,
 					const std::pair<T, int>*, std::pair<T, int>*> ptr;
