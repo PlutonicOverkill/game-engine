@@ -59,14 +59,13 @@ namespace Glare {
 			const T* operator->() const;
 			const T& operator*() const;
 
-			// TODO: static_assert these
 			T* operator->();
 			T& operator*();
 
 			template<bool U>
-			bool operator==(pointer_base<U>);
+			bool operator==(Slot_map_pointer_base<U>);
 			template<bool U>
-			bool operator!=(pointer_base<U>);
+			bool operator!=(Slot_map_pointer_base<U>);
 		private:
 			bool is_valid() const;
 
@@ -88,10 +87,9 @@ namespace Glare {
 			const T& operator*() const;
 			const T& operator[](int) const;
 
-			// TODO: static_assert these
-			T* operator->() const;
-			T& operator*() const;
-			T& operator[](int) const;
+			T* operator->();
+			T& operator*();
+			T& operator[](int);
 
 			Slot_map_iterator_base& operator++();
 			Slot_map_iterator_base& operator--();
@@ -108,8 +106,8 @@ namespace Glare {
 			template<bool U>
 			bool operator!=(Slot_map_iterator_base<U>);
 		private:
-			iterator_type ptr{nullptr};
-			Direct_index index{-1};
+			iterator_type ptr;
+			Direct_index index;
 		};
 
 		template<typename T>
@@ -209,15 +207,14 @@ Glare::Utility::Slot_map_pointer_base<T, Is_const>::Slot_map_pointer_base(pointe
 template<typename T, bool Is_const>
 const T* Glare::Utility::Slot_map_pointer_base<T, Is_const>::operator->() const
 {
-	static_assert(!Is_const, "pointer is constant");
-
-	// check that index and counter are in the correct range
-	if (!ptr || index == -1 || counter == -1 || index > ptr->elem_indirect.size())
-		return nullptr;
-
 	auto redirect = ptr->elem_indirect[index];
-	if (redirect.second != counter) // check counters
-		return nullptr;
+	return &(ptr->elem[redirect].first());
+}
+
+template<typename T, bool Is_const>
+T& Glare::Utility::Slot_map_pointer_base<T, Is_const>::operator*()
+{
+	auto redirect = ptr->elem_indirect[index];
 	return ptr->elem[redirect].first();
 }
 
@@ -226,13 +223,14 @@ T* Glare::Utility::Slot_map_pointer_base<T, Is_const>::operator->()
 {
 	static_assert(!Is_const, "pointer is constant");
 
-	// check that index and counter are in the correct range
-	if (!ptr || index == -1 || counter == -1 || index > ptr->elem_indirect.size())
-		return nullptr;
-
 	auto redirect = ptr->elem_indirect[index];
-	if (redirect.second != counter) // check counters
-		return nullptr;
+	return &(ptr->elem[redirect].first());
+}
+
+template<typename T, bool Is_const>
+const T& Glare::Utility::Slot_map_pointer_base<T, Is_const>::operator*() const
+{
+	static_assert(!Is_const, "pointer is constant");
 
 	auto redirect = ptr->elem_indirect[index];
 	return ptr->elem[redirect].first();
@@ -241,7 +239,12 @@ T* Glare::Utility::Slot_map_pointer_base<T, Is_const>::operator->()
 template<typename T, bool Is_const>
 bool Glare::Utility::Slot_map_pointer_base<T, Is_const>::is_valid() const
 {
-	return operator->(); // will return nullptr if handle is not valid
+	// check that index and counter are in the correct range
+	if (!ptr || counter == -1 || index < 0 || index >= ptr->elem_indirect.size())
+		return false;
+
+	auto redirect = ptr->elem_indirect[index];
+	return redirect.second == counter; // check counters
 }
 
 template<typename T, bool Is_const>
@@ -249,6 +252,70 @@ inline Glare::Utility::Slot_map_pointer_base<T, Is_const>::operator bool() const
 {
 	return is_valid();
 }
+
+template<typename T, bool Is_const>
+Slot_map_pointer_base & Glare::Utility::Slot_map_pointer_base<T, Is_const>::reset()
+{
+	ptr = nullptr;
+	index = -1;
+	counter = -1;
+	return *this;
+}
+
+template<typename T, bool Is_const>
+template<bool U>
+inline bool Glare::Utility::Slot_map_pointer_base<T, Is_const>::operator==(Slot_map_pointer_base<U> rhs)
+{
+	return index == rhs.index
+		&& counter == rhs.counter
+		&& ptr == rhs.ptr;
+}
+
+template<typename T, bool Is_const>
+template<bool U>
+inline bool Glare::Utility::Slot_map_pointer_base<T, Is_const>::operator!=(Slot_map_pointer_base<U> rhs)
+{
+	return !(this == rhs);
+}
+
+
+
+template<typename T, bool Is_const>
+inline const T* Glare::Utility::Slot_map_iterator_base<T, Is_const>::operator->() const
+{
+	return &(ptr->elem[index]);
+}
+
+template<typename T, bool Is_const>
+inline const T& Glare::Utility::Slot_map_iterator_base<T, Is_const>::operator*() const
+{
+	return ptr->elem[index];
+}
+
+template<typename T, bool Is_const>
+inline const T& Glare::Utility::Slot_map_iterator_base<T, Is_const>::operator[](int subscript) const
+{
+	return ptr->elem[index + subscript];
+}
+
+template<typename T, bool Is_const>
+inline T* Glare::Utility::Slot_map_iterator_base<T, Is_const>::operator->()
+{
+	return &(ptr->elem[index]);
+}
+
+template<typename T, bool Is_const>
+inline T& Glare::Utility::Slot_map_iterator_base<T, Is_const>::operator*()
+{
+	return ptr->elem[index];
+}
+
+template<typename T, bool Is_const>
+inline T& Glare::Utility::Slot_map_iterator_base<T, Is_const>::operator[](int subscript)
+{
+	return ptr->elem[index + subscript];
+}
+
 
 /*
 Main functions operate on Direct_indexes
