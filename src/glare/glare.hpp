@@ -484,6 +484,7 @@ Glare::Utility::Slot_map<T>& Glare::Utility::Slot_map<T>::buffered_remove(Direct
 	CHECK COUNTER
 	push_back pointer to destroy list
 	*/
+	return *this;
 }
 
 template<typename T>
