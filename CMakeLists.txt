@@ -20,7 +20,7 @@ add_subdirectory(src/lib/assimp)
 # add_subdirectory(src/lib/bullet)
 
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /WX")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /4")
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++17")
     if(NOT WIN32)
