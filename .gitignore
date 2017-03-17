@@ -1,6 +1,9 @@
 # visual studio creates this directory when opening the project as a folder
 .vs
 
+# VISUAL STUDIO STAHP
+x64/Debug/ZERO_CHECK/ZERO_CHECK.log
+
 build
 build64
 
