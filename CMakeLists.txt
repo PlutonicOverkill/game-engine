@@ -43,7 +43,12 @@ set(VENDORS_SOURCES
 )
 
 set(PROJECT_HEADERS
+	src/glare/ecs.hpp
+	src/glare/error.hpp
 	src/glare/glare.hpp
+	src/glare/slot_map.hpp
+	src/glare/utility.hpp
+	src/glare/video.hpp
 )
 
 set(PROJECT_SOURCES
