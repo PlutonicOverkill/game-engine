@@ -54,7 +54,7 @@ namespace Glare {
 		private:
 			bool is_valid() const;
 
-			pointer_type ptr;
+			pointer_type ptr{nullptr};
 			// -1 in either field indicates "not valid"
 			Index index{-1};
 			Counter counter{-1};
