@@ -441,7 +441,7 @@ Glare::Slot_map<T>& Glare::Slot_map<T>::remove(Direct_index x)
 	// swap indices
 	std::iter_swap(elem_indirect.begin() + remove_index, elem_indirect.begin() + last_index);
 	elem_indirect[x].second = -1; // reset counter
-								  // swap element to be removed with last element and pop
+	// swap element to be removed with last element and pop
 	std::iter_swap(elem.begin() + x, elem.end());
 	elem.pop_back();
 
