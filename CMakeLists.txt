@@ -36,6 +36,7 @@ include_directories(
 	src/lib/glfw/include/
 	src/lib/glm/
 	src/lib/stb/
+	src/lib/gtest/googletest/include
 )
 
 set(VENDORS_SOURCES
@@ -96,6 +97,7 @@ target_link_libraries(${PROJECT_NAME}
 	# BulletDynamics
 	#BulletCollision
 	#LinearMath
+	googletest
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
