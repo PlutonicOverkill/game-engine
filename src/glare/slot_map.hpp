@@ -13,9 +13,6 @@ namespace Glare {
 	class Iterator_incorrect_range : public Error::Glare_error {};
 
 	template<typename T>
-	class Slot_map;
-
-	template<typename T>
 	class Slot_map {
 		using Index = typename int; // index to elem_indirect
 		using Direct_index = typename int; // index to elem
