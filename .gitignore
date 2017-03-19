@@ -2,7 +2,9 @@
 .vs
 
 # VISUAL STUDIO STAHP
-x64/Debug/ZERO_CHECK/ZERO_CHECK.log
+x64
+glare.dir
+Unit_tests.dir
 
 build
 build64
