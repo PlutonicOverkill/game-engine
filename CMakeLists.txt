@@ -12,6 +12,17 @@ option(ASSIMP_BUILD_SAMPLES OFF)
 option(ASSIMP_BUILD_TESTS OFF)
 add_subdirectory(src/lib/assimp)
 
+# Prevent GoogleTest from overriding our compiler/linker options
+# when building with Visual Studio
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+add_subdirectory(src/lib/gtest)
+enable_testing()
+include_directories(src/lib/gtest/googletest/include)
+add_executable(Unit_tests src/tests/test.cpp src/tests/test_slot_map.cpp)
+target_link_libraries(Unit_tests gtest)
+add_test(Unit_tests Unit_tests)
+
 # option(BUILD_BULLET2_DEMOS OFF)
 # option(BUILD_CPU_DEMOS OFF)
 # option(BUILD_EXTRAS OFF)
@@ -36,7 +47,6 @@ include_directories(
 	src/lib/glfw/include/
 	src/lib/glm/
 	src/lib/stb/
-	src/lib/gtest/googletest/include
 )
 
 set(VENDORS_SOURCES
@@ -97,7 +107,6 @@ target_link_libraries(${PROJECT_NAME}
 	# BulletDynamics
 	#BulletCollision
 	#LinearMath
-	googletest
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
