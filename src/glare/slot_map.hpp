@@ -10,6 +10,16 @@
 #include <stdexcept>
 
 namespace Glare {
+	class Slot_map_pointer_not_valid :public Error::Glare_error {
+	public:
+		Slot_map_pointer_not_valid(std::string s) :Error::Glare_error {s}{};
+	};
+
+	class Slot_map_iterator_out_of_range :public Error::Glare_error {
+	public:
+		Slot_map_iterator_out_of_range(std::string s) :Error::Glare_error {s}{};
+	};
+
 	template<typename T>
 	class Slot_map {
 		using Index = int; // index to elem_indirect
@@ -26,10 +36,7 @@ namespace Glare {
 		class pointer_base {
 			using pointer_type = std::conditional_t<Is_const, const Slot_map*, Slot_map*>;
 		public:
-			class Not_valid :public Error::Glare_error {
-			public:
-				Not_valid(std::string s) :Error::Glare_error{s}{};
-			};
+			using Not_valid = Slot_map_pointer_not_valid;
 			pointer_base() = default; // doesn't point to a valid object
 			pointer_base(pointer_type, Index, Counter);
 			// default copy, move, destructor are fine
@@ -53,23 +60,18 @@ namespace Glare {
 
 			bool is_valid() const;
 		private:
-			// may point to an invalid element
-			pointer_type ptr{nullptr};
+			pointer_type ptr {nullptr};
 			// -1 in either field indicates "not valid"
-			Index index{-1};
-			Counter counter{-1};
+			Index index {-1};
+			Counter counter {-1};
 		}; // pointer_base
 
-		   // wrapper for std::pair<T, int>*
+		// wrapper for std::pair<T, int>*
 		template<bool Is_const>
 		class iterator_base {
 			using iterator_type = std::conditional_t<Is_const, const Slot_map*, Slot_map*>;
 		public:
-			class Out_of_range :public Error::Glare_error {
-			public:
-				Out_of_range(std::string s) :Error::Glare_error{s}{};
-			};
-
+			using Out_of_range = Slot_map_iterator_out_of_range;
 			iterator_base(iterator_type, Direct_index);
 			// default copy, move, destructor are fine
 
@@ -97,8 +99,9 @@ namespace Glare {
 			bool operator==(iterator_base<U>) const;
 			template<bool U>
 			bool operator!=(iterator_base<U>) const;
+
+			bool is_valid() const;
 		private:
-			// ptr[index] is always valid
 			iterator_type ptr;
 			Direct_index index;
 		}; // iterator_base
@@ -122,6 +125,14 @@ namespace Glare {
 
 		void clear();
 		size_type size() const;
+
+		iterator begin();
+		const_iterator begin() const;
+		const_iterator cbegin() const;
+
+		iterator end();
+		const_iterator end() const;
+		const_iterator cend() const;
 	private:
 		void clean_add_buffer();
 		void clean_remove_buffer();
@@ -138,7 +149,7 @@ namespace Glare {
 
 		// starts at 0 and increments each time an object is added
 		// used to validate handles
-		Counter counter{0};
+		Counter counter {0};
 	}; // Slot_map
 
 	template<typename T, bool Is_const>
@@ -173,8 +184,8 @@ template<bool Is_const>
 Glare::Slot_map<T>::iterator_base<Is_const>::iterator_base
 (typename Glare::Slot_map<T>::iterator_base<Is_const>::iterator_type ptr,
  Direct_index index)
-	:ptr{ptr},
-	index{index}
+	:ptr {ptr},
+	index {index}
 {}
 
 template<typename T>
@@ -182,16 +193,18 @@ template<bool Is_const>
 Glare::Slot_map<T>::pointer_base<Is_const>::pointer_base
 (typename Glare::Slot_map<T>::pointer_base<Is_const>::pointer_type ptr,
  Index index, Counter counter)
-	:ptr{ptr}, index{index}, counter{counter}
+	:ptr {ptr},
+	index {index},
+	counter {counter}
 {}
 
 template<typename T>
 template<bool Is_const>
 const T& Glare::Slot_map<T>::pointer_base<Is_const>::operator*() const
 {
-	if (!is_valid()) throw Not_valid{"Invalid pointer dereferenced"};
+	if (!is_valid()) throw Pointer_not_valid {"Invalid pointer dereferenced"};
 
-	Direct_index redirect{ptr->elem_indirect[index].first};
+	const Direct_index redirect {ptr->elem_indirect[index].first};
 	return ptr->elem[redirect].first();
 }
 
@@ -200,9 +213,9 @@ template<bool Is_const>
 T& Glare::Slot_map<T>::pointer_base<Is_const>::operator*()
 {
 	static_assert(!Is_const, "pointer is constant");
-	if (!is_valid()) throw Not_valid{"Invalid pointer dereferenced"};
+	if (!is_valid()) throw Not_valid {"Invalid pointer dereferenced"};
 
-	Direct_index redirect{ptr->elem_indirect[index].first};
+	const Direct_index redirect {ptr->elem_indirect[index].first};
 	return ptr->elem[redirect].first;
 }
 
@@ -210,9 +223,9 @@ template<typename T>
 template<bool Is_const>
 const T* Glare::Slot_map<T>::pointer_base<Is_const>::operator->() const
 {
-	if (!is_valid()) throw Not_valid{"Invalid pointer dereferenced"};
-	
-	Direct_index redirect{ptr->elem_indirect[index].first};
+	if (!is_valid()) throw Pointer_not_valid {"Invalid pointer dereferenced"};
+
+	const Direct_index redirect {ptr->elem_indirect[index].first};
 	return &(ptr->elem[redirect].first());
 }
 
@@ -221,9 +234,9 @@ template<bool Is_const>
 T* Glare::Slot_map<T>::pointer_base<Is_const>::operator->()
 {
 	static_assert(!Is_const, "pointer is constant");
-	if (!is_valid()) throw Not_valid{"Invalid pointer dereferenced"};
+	if (!is_valid()) throw Pointer_not_valid {"Invalid pointer dereferenced"};
 
-	Direct_index redirect{ptr->elem_indirect[index].first};
+	const Direct_index redirect {ptr->elem_indirect[index].first};
 	return &(ptr->elem[redirect].first());
 }
 
@@ -237,7 +250,7 @@ bool Glare::Slot_map<T>::pointer_base<Is_const>::is_valid() const
 		|| index >= ptr->elem_indirect.size())
 		return false;
 
-	auto redirect = ptr->elem_indirect[index];
+	const auto redirect = ptr->elem_indirect[index];
 	return redirect.second == counter // check counters
 		&& redirect.first != -1; // check index is valid
 }
@@ -284,6 +297,8 @@ template<typename T>
 template<bool Is_const>
 const T& Glare::Slot_map<T>::iterator_base<Is_const>::operator*() const
 {
+	if (!is_valid()) throw Iterator_out_of_range {"Out of range access"};
+
 	return ptr->elem[index];
 }
 
@@ -291,6 +306,8 @@ template<typename T>
 template<bool Is_const>
 T& Glare::Slot_map<T>::iterator_base<Is_const>::operator*()
 {
+	if (!is_valid()) throw Iterator_out_of_range {"Out of range access"};
+
 	return ptr->elem[index];
 }
 
@@ -298,6 +315,8 @@ template<typename T>
 template<bool Is_const>
 const T* Glare::Slot_map<T>::iterator_base<Is_const>::operator->() const
 {
+	if (!is_valid()) throw Iterator_out_of_range {"Out of range access"};
+
 	return &(ptr->elem[index]);
 }
 
@@ -305,6 +324,8 @@ template<typename T>
 template<bool Is_const>
 T* Glare::Slot_map<T>::iterator_base<Is_const>::operator->()
 {
+	if (!is_valid()) throw Iterator_out_of_range {"Out of range access"};
+
 	return &(ptr->elem[index]);
 }
 
@@ -312,14 +333,20 @@ template<typename T>
 template<bool Is_const>
 const T& Glare::Slot_map<T>::iterator_base<Is_const>::operator[](int subscript) const
 {
-	return ptr->elem[index + subscript];
+	const auto temp = *this + subscript;
+	if (!temp.is_valid()) throw Iterator_out_of_range {"Out of range access"};
+
+	return *temp;
 }
 
 template<typename T>
 template<bool Is_const>
 T& Glare::Slot_map<T>::iterator_base<Is_const>::operator[](int subscript)
 {
-	return ptr->elem[index + subscript];
+	const auto temp = *this + subscript;
+	if (!temp.is_valid()) throw Iterator_out_of_range {"Out of range access"};
+
+	return *temp;
 }
 
 template<typename T>
@@ -365,7 +392,7 @@ typename Glare::Slot_map<T>::difference_type
 Glare::Slot_map<T>::iterator_base<Is_const>::operator-(iterator_base<U> rhs) const
 {
 	if (ptr != rhs.ptr)
-		throw Out_of_range{"Attempted to subtract iterators to different containers"};
+		throw Iterator_out_of_range {"Attempted to subtract iterators to different containers"};
 	return index - rhs.index;
 }
 
@@ -422,7 +449,7 @@ Glare::Slot_map<T>& Glare::Slot_map<T>::operator=(std::initializer_list<T> init)
 template<typename T>
 typename Glare::Slot_map<T>::pointer Glare::Slot_map<T>::add(T t)
 {
-	Index x{get_free()};
+	const Index x {get_free()};
 	elem.emplace_back(t, x);
 	elem_indirect[x] = {elem.size() - 1, counter};
 	return {this, x, counter++};
@@ -435,7 +462,7 @@ typename Glare::Slot_map<T>::Index Glare::Slot_map<T>::get_free()
 		elem_indirect.push_back({});
 		return elem_indirect.size() - 1; // index of last element
 	} else {
-		Index x{free_index.back()};
+		const Index x {free_index.back()};
 		free_index.pop_back();
 		return x;
 	}
@@ -445,11 +472,11 @@ template<typename T>
 Glare::Slot_map<T>& Glare::Slot_map<T>::remove(Direct_index x)
 {
 	assert(!elem.empty());
-	auto last_index = elem.back().second;
-	auto remove_index = elem[x].second;
+	const auto last_index = elem.back().second;
+	const auto remove_index = elem[x].second;
 
 	// swap indices
-	std::iter_swap(elem_indirect.begin() + remove_index, elem_indirect.begin() + last_index);
+	std::swap(elem_indirect[remove_index], elem_indirect[last_index]);
 	elem_indirect[x].second = -1; // reset counter
 	// swap element to be removed with last element and pop
 	std::swap(elem[x], elem.back());
@@ -461,7 +488,7 @@ Glare::Slot_map<T>& Glare::Slot_map<T>::remove(Direct_index x)
 template<typename T>
 typename Glare::Slot_map<T>::pointer Glare::Slot_map<T>::buffered_add(T t)
 {
-	Index x{get_free()};
+	const Index x {get_free()};
 	creation_buffer.emplace_back(t, x);
 	elem_indirect[x] = {-1, counter};
 	return {this, x, counter++};
@@ -471,7 +498,7 @@ template<typename T>
 void Glare::Slot_map<T>::clean_add_buffer()
 {
 	while (!creation_buffer.empty()) {
-		Index x{creation_buffer.back().second};
+		const Index x {creation_buffer.back().second};
 		elem.push_back(creation_buffer.back());
 		creation_buffer.pop_back();
 		elem_indirect[x].first = elem.size() - 1;
@@ -481,7 +508,7 @@ void Glare::Slot_map<T>::clean_add_buffer()
 template<typename T>
 Glare::Slot_map<T>& Glare::Slot_map<T>::buffered_remove(Direct_index x)
 {
-	Index redirect{elem[x].second};
+	const Index redirect {elem[x].second};
 	deletion_buffer.emplace_back(this, redirect, elem_indirect[redirect].second);
 	return *this;
 }
@@ -510,7 +537,7 @@ template<bool Is_const>
 void Glare::Slot_map<T>::pointer_base<Is_const>::remove()
 {
 	if (is_valid()) {
-		Direct_index x{ptr->elem_indirect[index].first};
+		const Direct_index x {ptr->elem_indirect[index].first};
 		ptr->remove(x);
 		reset();
 	}
@@ -520,8 +547,8 @@ template<typename T>
 template<bool Is_const>
 void Glare::Slot_map<T>::pointer_base<Is_const>::buffered_remove()
 {
-	if (is_valid()) {
-		Direct_index x{ptr->elem_indirect[index].first};
+	if (is_valid() /*TODO - || on creation_buffer*/) {
+		const Direct_index x {ptr->elem_indirect[index].first};
 		ptr->buffered_remove(x);
 		reset();
 	}
@@ -532,6 +559,42 @@ template<bool Is_const>
 void Glare::Slot_map<T>::iterator_base<Is_const>::buffered_remove()
 {
 	ptr->buffered_remove(index);
+}
+
+template<typename T>
+typename Glare::Slot_map<T>::iterator Glare::Slot_map<T>::begin()
+{
+	return {this, 0};
+}
+
+template<typename T>
+typename Glare::Slot_map<T>::const_iterator Glare::Slot_map<T>::begin() const
+{
+	return {this, 0};
+}
+
+template<typename T>
+typename Glare::Slot_map<T>::const_iterator Glare::Slot_map<T>::cbegin() const
+{
+	return {this, 0};
+}
+
+template<typename T>
+typename Glare::Slot_map<T>::iterator Glare::Slot_map<T>::end()
+{
+	return {this, size()};
+}
+
+template<typename T>
+typename Glare::Slot_map<T>::const_iterator Glare::Slot_map<T>::end() const
+{
+	return {this, size()};
+}
+
+template<typename T>
+typename Glare::Slot_map<T>::const_iterator Glare::Slot_map<T>::cend() const
+{
+	return {this, size()};
 }
 
 #endif // !GLARE_SLOT_MAP_HPP
