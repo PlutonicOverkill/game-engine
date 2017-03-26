@@ -16,12 +16,18 @@ add_subdirectory(src/lib/assimp)
 # when building with Visual Studio
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
+set(GLARE_UNIT_TEST Glare_unit_test)
+set(GLARE_TEST_SOURCES
+	src/tests/test.cpp
+	src/tests/test_slot_map.cpp
+)
+
 add_subdirectory(src/lib/gtest)
 enable_testing()
 include_directories(src/lib/gtest/googletest/include)
-add_executable(Unit_tests src/tests/test.cpp src/tests/test_slot_map.cpp)
-target_link_libraries(Unit_tests gtest)
-add_test(Unit_tests Unit_tests)
+add_executable(${GLARE_UNIT_TEST} ${GLARE_TEST_SOURCES})
+target_link_libraries(${GLARE_UNIT_TEST} gtest)
+add_test(NAME ${GLARE_UNIT_TEST} COMMAND ${GLARE_UNIT_TEST})
 
 # option(BUILD_BULLET2_DEMOS OFF)
 # option(BUILD_CPU_DEMOS OFF)
@@ -33,7 +39,7 @@ add_test(Unit_tests Unit_tests)
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++17")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++17 ")
     if(NOT WIN32)
         set(GLAD_LIBRARIES dl)
     endif()
@@ -48,6 +54,17 @@ include_directories(
 	src/lib/glm/
 	src/lib/stb/
 )
+if(NOT EXISTS ${PROJECT_SOURCE_DIR}/src/lib/glad/src/glad.c)
+execute_process(
+	COMMAND python -m glad
+		--profile=core
+		--out-path=./
+		--generator=c-debug
+		--extensions=../../../GL_EXTENSIONS.txt
+		--omit-khrplatform
+	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src/lib/glad
+)
+endif()
 
 set(VENDORS_SOURCES
 	src/lib/glad/src/glad.c
@@ -70,7 +87,6 @@ set(PROJECT_SHADERS
 	src/shaders/main.frag
 	src/shaders/main.vert
 )
-
 
 set(PROJECT_CONFIGS
 	CMakeLists.txt
@@ -111,4 +127,13 @@ target_link_libraries(${PROJECT_NAME}
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME}
+)
+
+install(
+	TARGETS ${PROJECT_NAME}
+	RUNTIME DESTINATION ./
+)
+install(
+	FILES ${PROJECT_SHADERS}
+	DESTINATION shaders
 )
