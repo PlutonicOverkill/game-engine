@@ -1,0 +1,6 @@
+language: c++
+compiler:
+  - clang
+  - gcc
+install: ./travis_before_build.sh
+script: cmake --build . --config Release && ./build64/bin/test/Glare_unit_test
