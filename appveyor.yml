@@ -8,8 +8,9 @@ build:
   project: build64/glare.sln
   parallel: true
   verbosity: normal
+clone_folder: c:\projects\glare
 test_script:
-  - build64/bin/test/Glare_unit_test.exe
+  - c:\projects\glare\build64\bin\test\Glare_unit_test.exe
 artifacts:
 - path: build64/bin/glare
   name: Glare
