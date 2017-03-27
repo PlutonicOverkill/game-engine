@@ -141,5 +141,5 @@ ADD_CUSTOM_COMMAND(TARGET ${PROJECT_NAME}
           POST_BUILD
           COMMAND ${CMAKE_COMMAND} -E make_directory ${GLARE_INSTALL_DIR}/${PROJECT_NAME}/shaders
           # COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SHADERS} ${GLARE_INSTALL_DIR}/${PROJECT_NAME}/shaders
-		  COMMAND ${CMAKE_COMMAND} -E copy_directory src/shaders ${GLARE_INSTALL_DIR}/${PROJECT_NAME}/shaders
+		  COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/src/shaders ${GLARE_INSTALL_DIR}/${PROJECT_NAME}/shaders
 )
