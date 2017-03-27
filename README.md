@@ -1,5 +1,6 @@
 # GLARE
-[![Build status](https://ci.appveyor.com/api/projects/status/3bu10drfllhwx89q/branch/master?svg=true)](https://ci.appveyor.com/project/PlutonicOverkill/glare/branch/master)
+[![AppVeyor](https://ci.appveyor.com/api/projects/status/3bu10drfllhwx89q/branch/master?svg=true)](https://ci.appveyor.com/project/PlutonicOverkill/glare/branch/master)
+[![Travis CI](https://travis-ci.org/PlutonicOverkill/glare.svg?branch=master)](https://travis-ci.org/PlutonicOverkill/glare)
 
 [Latest autobuild](https://ci.appveyor.com/api/projects/PlutonicOverkill/glare/artifacts/build64/bin/Glare.zip?branch=master&job=Configuration%3A+Release)
 
