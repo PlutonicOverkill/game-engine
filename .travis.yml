@@ -4,6 +4,9 @@ compiler:
   - gcc
 before_install:
   - git submodule update --init --recursive
-  - chmod +x travis_before_build.sh
-install: ./travis_before_build.sh
-script: cmake --build . --config Release && ./build64/bin/test/Glare_unit_test
+install:
+  - cmake -E make_directory build64
+  - cd build64
+  - cmake -DCMAKE_INSTALL_PREFIX=bin -G "Visual Studio 15 2017 Win64" ..
+  - cd ..
+script: cmake --build build64 --config Release . && ./build64/bin/test/Glare_unit_test
