@@ -23,11 +23,11 @@ set(GLARE_TEST_SOURCES
 )
 
 add_subdirectory(src/lib/gtest)
-enable_testing()
+# enable_testing()
 include_directories(src/lib/gtest/googletest/include)
 add_executable(${GLARE_UNIT_TEST} ${GLARE_TEST_SOURCES})
 target_link_libraries(${GLARE_UNIT_TEST} gtest)
-add_test(NAME ${GLARE_UNIT_TEST} COMMAND ${GLARE_UNIT_TEST})
+# add_test(NAME ${GLARE_UNIT_TEST} COMMAND ${GLARE_UNIT_TEST})
 
 # option(BUILD_BULLET2_DEMOS OFF)
 # option(BUILD_CPU_DEMOS OFF)
@@ -37,7 +37,8 @@ add_test(NAME ${GLARE_UNIT_TEST} COMMAND ${GLARE_UNIT_TEST})
 # add_subdirectory(src/lib/bullet)
 
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+	# disable stupid size_t conversion warnings
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /wd4267 /wd4100")
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++17 ")
     if(NOT WIN32)
@@ -96,11 +97,11 @@ set(PROJECT_CONFIGS
 	.gitmodules
 )
 
-file(COPY ${PROJECT_SHADERS} DESTINATION ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/shaders)
-
 source_group("Headers" FILES ${PROJECT_HEADERS})
 source_group("Sources" FILES ${PROJECT_SOURCES})
 source_group("Vendors" FILES ${VENDORS_SOURCES})
+source_group("Shaders" FILES ${PROJECT_SHADERS})
+source_group("Configs" FILES ${PROJECT_CONFIGS})
 
 add_definitions(
 	-DGLFW_INCLUDE_NONE
@@ -125,15 +126,20 @@ target_link_libraries(${PROJECT_NAME}
 	#LinearMath
 )
 
+set(GLARE_INSTALL_DIR ${CMAKE_BINARY_DIR}/bin)
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
-	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME}
+                      RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${GLARE_INSTALL_DIR}/${PROJECT_NAME}
+                      RUNTIME_OUTPUT_DIRECTORY_RELEASE ${GLARE_INSTALL_DIR}/${PROJECT_NAME}
+)
+set_target_properties(${GLARE_UNIT_TEST} PROPERTIES
+                      RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${GLARE_INSTALL_DIR}/test
+                      RUNTIME_OUTPUT_DIRECTORY_RELEASE ${GLARE_INSTALL_DIR}/test
 )
 
-install(
-	TARGETS ${PROJECT_NAME}
-	RUNTIME DESTINATION ./
-)
-install(
-	FILES ${PROJECT_SHADERS}
-	DESTINATION shaders
+ADD_CUSTOM_COMMAND(TARGET ${PROJECT_NAME}
+          POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E make_directory ${GLARE_INSTALL_DIR}/${PROJECT_NAME}/shaders
+          # COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SHADERS} ${GLARE_INSTALL_DIR}/${PROJECT_NAME}/shaders
+		  COMMAND ${CMAKE_COMMAND} -E copy_directory src/shaders ${GLARE_INSTALL_DIR}/${PROJECT_NAME}/shaders
 )
