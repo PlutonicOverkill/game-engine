@@ -13,3 +13,7 @@ build:
   verbosity: normal
 test:
   assemblies: build64/bin/test/Glare_unit_test.exe
+artifacts:
+- path: build64/bin/glare
+  name: Glare
+  
