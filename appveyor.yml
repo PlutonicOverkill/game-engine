@@ -1,0 +1,15 @@
+version: 1.0.{build}
+branches:
+  only:
+  - master
+image: Visual Studio 2017
+configuration: Release
+platform: x64
+before_build:
+- cmd: appveyor_before_build.bat
+build:
+  project: build64/glare.sln
+  parallel: true
+  verbosity: normal
+test:
+  assemblies: build64/bin/test/Glare_unit_test.exe
