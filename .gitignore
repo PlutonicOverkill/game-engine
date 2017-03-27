@@ -5,6 +5,7 @@
 x64
 glare.dir
 Unit_tests.dir
+Glare_unit_test.dir
 
 build
 build64
