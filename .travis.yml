@@ -5,8 +5,8 @@ compiler:
 before_install:
   - git submodule update --init --recursive
 install:
-  - cmake -E make_directory build64
+  - mkdir build64
   - cd build64
-  - cmake -DCMAKE_INSTALL_PREFIX=bin ..
+  - cmake ..
   - cd ..
-script: cmake --build build64 --config Release . && ./build64/bin/test/Glare_unit_test
+script: cd build64 && make && ./bin/test/Glare_unit_test
