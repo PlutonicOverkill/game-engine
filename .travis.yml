@@ -10,3 +10,13 @@ install:
   - cmake ..
   - cd ..
 script: cd build64 && make && ./bin/test/Glare_unit_test
+addons:
+  apt:
+    sources:
+      - george-edison55-precise-backports
+      - llvm-toolchain-precise
+      - ubuntu-toolchain-r-test
+    packages:
+      - clang-3.7
+      - g++-5
+      - gcc-5
