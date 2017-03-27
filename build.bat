@@ -16,4 +16,6 @@ cmake --build . --config Release
 rem ctest -v -C Debug -DCTEST_OUTPUT_ON_FAILURE=1
 rem ctest -v -C Release
 
+.\bin\test\Glare_unit_test.exe
+
 cd ..

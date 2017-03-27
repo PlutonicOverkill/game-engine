@@ -139,9 +139,6 @@ set_target_properties(${GLARE_UNIT_TEST} PROPERTIES
 
 ADD_CUSTOM_COMMAND(TARGET ${PROJECT_NAME}
           POST_BUILD
-		  COMMENT "Running unit tests..."
-		  COMMAND ${GLARE_UNIT_TEST}
-		  COMMENT "Installing to directory ${GLARE_INSTALL_DIR}/${PROJECT_NAME}"
           COMMAND ${CMAKE_COMMAND} -E make_directory ${GLARE_INSTALL_DIR}/${PROJECT_NAME}/shaders
           # COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SHADERS} ${GLARE_INSTALL_DIR}/${PROJECT_NAME}/shaders
 		  COMMAND ${CMAKE_COMMAND} -E copy_directory src/shaders ${GLARE_INSTALL_DIR}/${PROJECT_NAME}/shaders
