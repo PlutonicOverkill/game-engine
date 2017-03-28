@@ -10,6 +10,6 @@ CD /D %~dp0
 IF NOT EXIST build64 cmake -E make_directory build64
 cd build64
 cmake -G "Visual Studio 15 2017 Win64" ..
-# cmake --build . --config Release
+rem cmake --build . --config Release
 
 cd ..
