@@ -9,13 +9,7 @@ CD /D %~dp0
 
 IF NOT EXIST build64 cmake -E make_directory build64
 cd build64
-cmake -DCMAKE_INSTALL_PREFIX=bin -G "Visual Studio 15 2017 Win64" ..
-rem cmake --build . --config Debug
-cmake --build . --config Release
-
-rem ctest -v -C Debug -DCTEST_OUTPUT_ON_FAILURE=1
-rem ctest -v -C Release
-
-.\bin\test\Glare_unit_test.exe
+cmake -G "Visual Studio 15 2017 Win64" ..
+# cmake --build . --config Release
 
 cd ..
