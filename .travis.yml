@@ -18,5 +18,5 @@ addons:
     packages:
       - xorg-dev
       - libglu1-mesa-dev
-      - g++-7
+      - g++-5
 env: COMPILER=g++-5
