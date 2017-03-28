@@ -1,5 +1,5 @@
 # adapted from https://github.com/polytonic/glitter - bullet removed for now
-cmake_minimum_required(VERSION 3.0)
+# cmake_minimum_required(VERSION 3.0)
 project(glare)
 
 option(GLFW_BUILD_DOCS OFF)
