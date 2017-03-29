@@ -58,6 +58,9 @@ namespace Glare {
 			template<bool U>
 			bool operator!=(pointer_base<U>) const;
 
+			template<bool U>
+			explicit operator pointer_base<U>() const;
+
 			bool is_valid() const;
 		private:
 			pointer_type ptr {nullptr};
@@ -99,6 +102,11 @@ namespace Glare {
 			bool operator==(iterator_base<U>) const;
 			template<bool U>
 			bool operator!=(iterator_base<U>) const;
+
+			template<bool U>
+			explicit operator iterator_base<U>() const;
+			template<bool U>
+			explicit operator pointer_base<U>();
 
 			bool is_valid() const;
 		private:
@@ -595,6 +603,34 @@ template<typename T>
 typename Glare::Slot_map<T>::const_iterator Glare::Slot_map<T>::cend() const
 {
 	return {this, size()};
+}
+
+template<typename T>
+template<bool Is_const>
+template<bool U>
+Glare::Slot_map<T>::iterator_base<Is_const>::operator Glare::Slot_map<T>::pointer_base<U>()
+{
+	Index redirect = elem[index].second;
+	Counter count = elem_indirect[redirect].second;
+	return {ptr, redirect, counter};
+}
+
+template<typename T>
+template<bool Is_const>
+template<bool U>
+Glare::Slot_map<T>::pointer_base<Is_const>::operator
+Glare::Slot_map<T>::pointer_base<U>() const
+{
+	return {ptr, index, counter};
+}
+
+template<bool Is_const>
+template<typename T>
+template<bool U>
+Glare::Slot_map<T>::iterator_base<Is_const>::operator
+Glare::Slot_map<T>::iterator_base<U>() const
+{
+	return {ptr, index};
 }
 
 #endif // !GLARE_SLOT_MAP_HPP
