@@ -624,8 +624,8 @@ Glare::Slot_map<T>::pointer_base<U>() const
 	return {ptr, index, counter};
 }
 
-template<bool Is_const>
 template<typename T>
+template<bool Is_const>
 template<bool U>
 Glare::Slot_map<T>::iterator_base<Is_const>::operator
 Glare::Slot_map<T>::iterator_base<U>() const
