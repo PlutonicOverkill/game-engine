@@ -486,12 +486,14 @@ template<typename T>
 Glare::Slot_map<T>& Glare::Slot_map<T>::remove(Direct_index x)
 {
 	assert(!elem.empty());
-	const auto last_index = elem.back().second;
-	const auto remove_index = elem[x].second;
+	const Index last_index = elem.back().second;
+	const Index remove_index = elem[x].second;
 
+	// reset counter
+	elem_indirect[remove_index].second = -1;
 	// swap indices
-	std::swap(elem_indirect[remove_index], elem_indirect[last_index]);
-	elem_indirect[x].second = -1; // reset counter
+	std::swap(elem_indirect[remove_index].first, elem_indirect[last_index].first);
+	
 	// swap element to be removed with last element and pop
 	std::swap(elem[x], elem.back());
 	elem.pop_back();
