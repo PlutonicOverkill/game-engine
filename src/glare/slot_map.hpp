@@ -8,8 +8,10 @@
 #include <type_traits>
 #include <vector>
 #include <stdexcept>
+#include <algorithm>
 
 namespace Glare {
+	// TODO: put errors into seperate file
 	class Slot_map_pointer_not_valid :public Error::Glare_error {
 	public:
 		Slot_map_pointer_not_valid(std::string s) :Error::Glare_error {s}{};
@@ -146,6 +148,10 @@ namespace Glare {
 		void clean_remove_buffer();
 
 		Index get_free();
+
+		// will check if element with that index is scheduled for creation
+		// returns -1 for "not found"
+		int elem_in_creation_buffer(Index);
 
 		std::vector<std::pair<T, Index>> elem;
 		std::vector<std::pair<Direct_index, Counter>> elem_indirect;
@@ -555,10 +561,31 @@ template<typename T>
 template<bool Is_const>
 void Glare::Slot_map<T>::pointer_base<Is_const>::buffered_remove()
 {
-	if (is_valid() /*TODO - || on creation_buffer*/) {
+	if (is_valid()) {
 		const Direct_index x {ptr->elem_indirect[index].first};
 		ptr->buffered_remove(x);
-		reset();
+		// reset();
+	} else { // ugly due to lack of C++17 support
+		auto x = ptr->elem_in_creation_buffer(index);
+		if (x != -1) {
+			// element is being destroyed before it has been created
+
+			// swap element to be removed with last element and pop
+			std::swap(ptr->creation_buffer[x], ptr->creation_buffer.back());
+			ptr->creation_buffer.pop_back();
+		}
+	}
+}
+
+template<typename T>
+int Glare::Slot_map<T>::elem_in_creation_buffer(Index x)
+{
+	auto iter = std::find_if(creation_buffer.begin(), creation_buffer.end(),
+							 [x](std::pair<T, Index> p) {return p.second == x;});
+	if (iter != creation_buffer.end()) {
+		return iter - creation_buffer.begin();
+	} else {
+		return -1;
 	}
 }
 

@@ -23,6 +23,7 @@ TEST(SlotMap, AddRemove)
 	p1.remove();
 	EXPECT_FALSE(p1);
 	EXPECT_EQ(sm.size(), 1);
+	ASSERT_TRUE(p2);
 	EXPECT_EQ(*p2, 2);
 }
 
