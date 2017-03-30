@@ -11,17 +11,6 @@
 #include <algorithm>
 
 namespace Glare {
-	// TODO: put errors into seperate file
-	class Slot_map_pointer_not_valid :public Error::Glare_error {
-	public:
-		Slot_map_pointer_not_valid(std::string s) :Error::Glare_error {s}{};
-	};
-
-	class Slot_map_iterator_out_of_range :public Error::Glare_error {
-	public:
-		Slot_map_iterator_out_of_range(std::string s) :Error::Glare_error {s}{};
-	};
-
 	template<typename T>
 	class Slot_map {
 		using Index = int; // index to elem_indirect
@@ -38,7 +27,7 @@ namespace Glare {
 		class pointer_base {
 			using pointer_type = std::conditional_t<Is_const, const Slot_map*, Slot_map*>;
 		public:
-			using Not_valid = Slot_map_pointer_not_valid;
+			using Not_valid = Error::Slot_map_pointer_not_valid;
 			pointer_base() = default; // doesn't point to a valid object
 			pointer_base(pointer_type, Index, Counter);
 			// default copy, move, destructor are fine
@@ -76,7 +65,7 @@ namespace Glare {
 		class iterator_base {
 			using iterator_type = std::conditional_t<Is_const, const Slot_map*, Slot_map*>;
 		public:
-			using Out_of_range = Slot_map_iterator_out_of_range;
+			using Out_of_range = Error::Slot_map_iterator_out_of_range;
 			iterator_base(iterator_type, Direct_index);
 			// default copy, move, destructor are fine
 
