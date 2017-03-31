@@ -25,6 +25,21 @@ TEST(SlotMap, AddRemove)
 	EXPECT_EQ(sm.size(), 1);
 	ASSERT_TRUE(p2);
 	EXPECT_EQ(*p2, 2);
+
+	auto p3 = sm.add(3);
+	ASSERT_TRUE(p3);
+	EXPECT_EQ(*p3, 3);
+	EXPECT_EQ(sm.size(), 2);
+
+	ASSERT_TRUE(p2);
+	EXPECT_EQ(*p2, 2);
+
+	p3.remove();
+
+	EXPECT_FALSE(p3);
+
+	ASSERT_TRUE(p2);
+	EXPECT_EQ(*p2, 2);
 }
 
 TEST(SlotMap, BufferedAddRemove)

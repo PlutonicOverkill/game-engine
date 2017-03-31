@@ -463,7 +463,7 @@ typename Glare::Slot_map<T>::pointer Glare::Slot_map<T>::add(T t)
 {
 	const Index x {get_free()};
 	elem.push_back({t, x});
-	elem_indirect[x].index = elem.size();
+	elem_indirect[x].index = elem.size() - 1;
 	elem_indirect[x].counter = counter;
 	return {this, x, counter++};
 }
