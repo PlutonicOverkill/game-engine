@@ -582,8 +582,8 @@ template<typename T>
 int Glare::Slot_map<T>::elem_in_creation_buffer(Index x)
 {
 	const auto iter = std::find_if(creation_buffer.begin(), creation_buffer.end(),
-								   [x](Glare::Slot_map<T>::Indexed_element)
-	{return p.index == x; });
+								   [x](Glare::Slot_map<T>::Indexed_element p)
+	{return p.index == x;});
 
 	if (iter != creation_buffer.end()) {
 		return iter - creation_buffer.begin();
