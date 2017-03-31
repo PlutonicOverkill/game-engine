@@ -462,7 +462,7 @@ template<typename T>
 typename Glare::Slot_map<T>::pointer Glare::Slot_map<T>::add(T t)
 {
 	const Index x {get_free()};
-	elem.emplace_back(t, x);
+	elem.push_back({t, x});
 	elem_indirect[x].index = elem.size();
 	elem_indirect[x].counter = counter;
 	return {this, x, counter++};
@@ -504,7 +504,7 @@ template<typename T>
 typename Glare::Slot_map<T>::pointer Glare::Slot_map<T>::buffered_add(T t)
 {
 	const Index x {get_free()};
-	creation_buffer.emplace_back(t, x);
+	creation_buffer.push_back({t, x});
 	elem_indirect[x] = {-1, counter};
 	return {this, x, counter++};
 }
@@ -582,7 +582,7 @@ template<typename T>
 int Glare::Slot_map<T>::elem_in_creation_buffer(Index x)
 {
 	const auto iter = std::find_if(creation_buffer.begin(), creation_buffer.end(),
-								   [x](Glare::Slot_map<T>::Indexed_element p)
+								   [x](Indexed_element p)
 	{return p.index == x;});
 
 	if (iter != creation_buffer.end()) {
