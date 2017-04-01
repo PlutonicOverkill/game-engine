@@ -127,4 +127,22 @@ TEST(SlotMap, Iterator)
 	for (int i = 0; ++iter, ++i; iter != sm.end()) {
 		EXPECT_EQ(*iter, i);
 	}
+
+	*iter = 42;
+	EXPECT_EQ(sm[0], 42);
+
+	iter[2] = -2;
+	EXPECT_EQ(sm[2], -2);
+
+	iter += 2;
+	EXPECT_EQ(*iter, -2);
+	EXPECT_EQ(iter[-2], 42);
+
+	iter -= 1;
+	EXPECT_EQ(*iter, 1);
+
+	EXPECT_EQ(*(iter + 2), 3);
+	EXPECT_EQ(*(iter - 1), 1);
+
+	EXPECT_EQ(sm.end() - sm.begin(), sm.size());
 }

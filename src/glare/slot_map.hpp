@@ -19,7 +19,7 @@ namespace Glare {
 	public:
 		using value_type = T;
 		using size_type = Direct_index;
-		using difference_type = ptrdiff_t;
+		using difference_type = int;
 
 		using Out_of_range = Error::Slot_map_out_of_range;
 
@@ -85,6 +85,12 @@ namespace Glare {
 
 			iterator_base& operator+=(difference_type);
 			iterator_base& operator-=(difference_type);
+
+			// these shouldn't be members, but apparently
+			// global operators can't have multiple template
+			// parameter lists, so they have to be here
+			iterator_base operator+(difference_type) const;
+			iterator_base operator-(difference_type) const;
 
 			template<bool U>
 			difference_type operator-(iterator_base<U>) const;
@@ -165,32 +171,24 @@ namespace Glare {
 		// used to validate handles
 		Counter counter {0};
 	}; // Slot_map
-
-	template<typename T, bool Is_const>
-	Slot_map<T>::iterator_base<Is_const> operator+
-		(Slot_map<T>::iterator_base<Is_const>, typename Slot_map<T>::difference_type);
-
-	template<typename T, bool Is_const>
-	Slot_map<T>::iterator_base<Is_const> operator-
-		(Slot_map<T>::iterator_base<Is_const>, typename Slot_map<T>::difference_type);
 }
 
 /***** IMPLEMENTATION *****/
 
-template<typename T, bool Is_const>
-Glare::Slot_map<T>::iterator_base<Is_const> Glare::operator+
-(Glare::Slot_map<T>::iterator_base<Is_const> lhs,
- typename Glare::Slot_map<T>::difference_type rhs)
+template<typename T>
+template<bool Is_const>
+Glare::Slot_map<T>::iterator_base<Is_const>
+Glare::Slot_map<T>::iterator_base<Is_const>::operator+(difference_type rhs) const
 {
-	return lhs += rhs;
+	return {ptr, index + rhs};
 }
 
-template<typename T, bool Is_const>
-Glare::Slot_map<T>::iterator_base<Is_const> Glare::operator-
-(Glare::Slot_map<T>::iterator_base<Is_const> lhs,
- typename Glare::Slot_map<T>::difference_type rhs)
+template<typename T>
+template<bool Is_const>
+Glare::Slot_map<T>::iterator_base<Is_const>
+Glare::Slot_map<T>::iterator_base<Is_const>::operator-(difference_type rhs) const
 {
-	return lhs -= rhs;
+	return {ptr, index - rhs};
 }
 
 template<typename T>
@@ -346,9 +344,6 @@ template<typename T>
 template<bool Is_const>
 T& Glare::Slot_map<T>::iterator_base<Is_const>::operator[](int subscript)
 {
-	const auto temp = *this + subscript;
-	if (!temp.is_valid()) throw Iterator_out_of_range {"Out of range access"};
-
 	return (*ptr)[index + subscript];
 }
 
@@ -395,7 +390,7 @@ typename Glare::Slot_map<T>::difference_type
 Glare::Slot_map<T>::iterator_base<Is_const>::operator-(iterator_base<U> rhs) const
 {
 	if (ptr != rhs.ptr)
-		throw Iterator_out_of_range {"Attempted to subtract iterators to different containers"};
+		throw Out_of_range {"Attempted to subtract iterators to different containers"};
 	return index - rhs.index;
 }
 
