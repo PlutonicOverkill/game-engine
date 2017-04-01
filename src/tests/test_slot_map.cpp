@@ -121,28 +121,31 @@ TEST(SlotMap, InitializerList)
 TEST(SlotMap, Iterator)
 {
 	Glare::Slot_map<int> sm {0, 1, 2, 3};
-
-	auto iter = sm.begin();
-
-	for (int i = 0; ++iter, ++i; iter != sm.end()) {
-		EXPECT_EQ(*iter, i);
+	
+	{ // TODO: update when VC++ is standards compliant
+		auto iter = sm.begin();
+		int i {0};
+		for (/*auto[iter, i] = {sm.begin(), 0}*/; iter != sm.end(); ++iter, ++i) {
+			EXPECT_EQ(*iter, i);
+		}
 	}
 
-	*iter = 42;
+	auto iter = sm.begin();
+	*iter = 42; // sm[0]
 	EXPECT_EQ(sm[0], 42);
 
-	iter[2] = -2;
+	iter[2] = -2; // sm[2]
 	EXPECT_EQ(sm[2], -2);
 
-	iter += 2;
-	EXPECT_EQ(*iter, -2);
-	EXPECT_EQ(iter[-2], 42);
+	iter += 2; // sm[2]
+	EXPECT_EQ(*iter, -2); // sm[2]
+	EXPECT_EQ(iter[-2], 42); // sm[0]
 
-	iter -= 1;
+	iter -= 1; // sm[1]
 	EXPECT_EQ(*iter, 1);
 
-	EXPECT_EQ(*(iter + 2), 3);
-	EXPECT_EQ(*(iter - 1), 1);
+	EXPECT_EQ(*(iter + 2), 3); // sm[3]
+	EXPECT_EQ(*(iter - 1), 1); // sm[0]
 
 	EXPECT_EQ(sm.end() - sm.begin(), sm.size());
 }
