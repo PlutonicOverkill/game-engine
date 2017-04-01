@@ -672,4 +672,29 @@ T& Glare::Slot_map<T>::operator[](Direct_index index)
 		return elem[index];
 }
 
+template<typename T>
+template<bool Is_const>
+template<bool U>
+Glare::Slot_map<T>::pointer_base<Is_const>::operator pointer_base<U>() const
+{
+	return {ptr, index, counter};
+}
+
+template<typename T>
+template<bool Is_const>
+template<bool U>
+Glare::Slot_map<T>::iterator_base<Is_const>::operator iterator_base<U>() const
+{
+	return {ptr, index};
+}
+
+template<typename T>
+template<bool Is_const>
+template<bool U>
+Glare::Slot_map<T>::iterator_base<Is_const>::operator pointer_base<U>()
+{
+	auto redirect = ptr->elem_indirect[index];
+	return {ptr, redirect.index, redirect.counter};
+}
+
 #endif // !GLARE_SLOT_MAP_HPP
