@@ -16,13 +16,8 @@ namespace Glare {
 			Slot_map_pointer_not_valid(std::string s) :Glare_error {std::move(s)}{};
 		};
 
-		class Slot_map_iterator_out_of_range : public Glare_error {
-		public:
-			Slot_map_iterator_out_of_range(std::string s) :Glare_error {std::move(s)}{};
-		};
-
-		class Slot_map_index_out_of_range : public Glare_error {
-			Slot_map_index_out_of_range(std::string s) :Glare_error {std::move(s)}{};
+		class Slot_map_out_of_range : public Glare_error {
+			Slot_map_out_of_range(std::string s) :Glare_error {std::move(s)}{};
 		};
 	}
 }

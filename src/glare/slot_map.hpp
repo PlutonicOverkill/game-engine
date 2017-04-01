@@ -21,7 +21,7 @@ namespace Glare {
 		using size_type = Direct_index;
 		using difference_type = ptrdiff_t;
 
-		using Index_out_of_range = Error::Slot_map_index_out_of_range;
+		using Out_of_range = Error::Slot_map_out_of_range;
 
 		// long-term handle, intended primarily for objects to safetly refer to others
 		// "knows" which container it belongs to
@@ -66,7 +66,6 @@ namespace Glare {
 		class iterator_base {
 			using iterator_type = std::conditional_t<Is_const, const Slot_map*, Slot_map*>;
 		public:
-			using Out_of_range = Error::Slot_map_iterator_out_of_range;
 			iterator_base(iterator_type, Direct_index);
 			// default copy, move, destructor are fine
 
@@ -99,8 +98,6 @@ namespace Glare {
 			explicit operator iterator_base<U>() const;
 			template<bool U>
 			explicit operator pointer_base<U>();
-
-			bool is_valid() const;
 		private:
 			iterator_type ptr;
 			Direct_index index;
@@ -314,46 +311,35 @@ template<typename T>
 template<bool Is_const>
 const T& Glare::Slot_map<T>::iterator_base<Is_const>::operator*() const
 {
-	if (!is_valid()) throw Iterator_out_of_range {"Out of range access"};
-
-	return ptr->elem[index];
+	return (*ptr)[index];
 }
 
 template<typename T>
 template<bool Is_const>
 T& Glare::Slot_map<T>::iterator_base<Is_const>::operator*()
 {
-	if (!is_valid()) throw Iterator_out_of_range {"Out of range access"};
-
-	return ptr->elem[index];
+	return (*ptr)[index];
 }
 
 template<typename T>
 template<bool Is_const>
 const T* Glare::Slot_map<T>::iterator_base<Is_const>::operator->() const
 {
-	if (!is_valid()) throw Iterator_out_of_range {"Out of range access"};
-
-	return &(ptr->elem[index]);
+	return &((*ptr)[index]);
 }
 
 template<typename T>
 template<bool Is_const>
 T* Glare::Slot_map<T>::iterator_base<Is_const>::operator->()
 {
-	if (!is_valid()) throw Iterator_out_of_range {"Out of range access"};
-
-	return &(ptr->elem[index]);
+	return &((*ptr)[index]);
 }
 
 template<typename T>
 template<bool Is_const>
 const T& Glare::Slot_map<T>::iterator_base<Is_const>::operator[](int subscript) const
 {
-	const auto temp = *this + subscript;
-	if (!temp.is_valid()) throw Iterator_out_of_range {"Out of range access"};
-
-	return *temp;
+	return (*ptr)[index + subscript];
 }
 
 template<typename T>
@@ -363,7 +349,7 @@ T& Glare::Slot_map<T>::iterator_base<Is_const>::operator[](int subscript)
 	const auto temp = *this + subscript;
 	if (!temp.is_valid()) throw Iterator_out_of_range {"Out of range access"};
 
-	return *temp;
+	return (*ptr)[index + subscript];
 }
 
 template<typename T>
