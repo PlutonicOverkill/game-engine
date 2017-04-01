@@ -145,7 +145,7 @@ TEST(SlotMap, Iterator)
 	EXPECT_EQ(*iter, 1);
 
 	EXPECT_EQ(*(iter + 2), 3); // sm[3]
-	EXPECT_EQ(*(iter - 1), 1); // sm[0]
+	EXPECT_EQ(*(iter - 1), 42); // sm[0]
 
 	EXPECT_EQ(sm.end() - sm.begin(), sm.size());
 }
