@@ -110,7 +110,8 @@ TEST(SlotMap, Clear)
 	EXPECT_EQ(sm.size(), 0);
 }
 
-TEST(SlotMap, Iterator)
+TEST(SlotMap, InitializerList)
 {
-	// TODO
+	Glare::Slot_map<int> sm {1, 2, 3, 4};
+
 }

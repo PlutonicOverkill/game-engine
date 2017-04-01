@@ -21,6 +21,8 @@ namespace Glare {
 		using size_type = Direct_index;
 		using difference_type = ptrdiff_t;
 
+		using Index_out_of_range = Error::Slot_map_index_out_of_range;
+
 		// long-term handle, intended primarily for objects to safetly refer to others
 		// "knows" which container it belongs to
 		template<bool Is_const>
@@ -131,6 +133,9 @@ namespace Glare {
 		iterator end();
 		const_iterator end() const;
 		const_iterator cend() const;
+
+		const T& operator[](Direct_index) const;
+		T& operator[](Direct_index);
 	private:
 		void clean_add_buffer();
 		void clean_remove_buffer();
@@ -661,6 +666,24 @@ Glare::Slot_map<T>::iterator_base<Is_const>::operator
 Glare::Slot_map<T>::iterator_base<U>() const
 {
 	return {ptr, index};
+}
+
+template<typename T>
+const T& Glare::Slot_map<T>::operator[](Direct_index index) const
+{
+	if (index < 0 || index >= elem.size)
+		throw Index_out_of_range("Slot_map indexed with out of range index");
+	else
+		return elem[index];
+}
+
+template<typename T>
+T& Glare::Slot_map<T>::operator[](Direct_index index)
+{
+	if (index < 0 || index >= elem.size)
+		throw Index_out_of_range("Slot_map indexed with out of range index");
+	else
+		return elem[index];
 }
 
 #endif // !GLARE_SLOT_MAP_HPP

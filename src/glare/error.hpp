@@ -19,6 +19,10 @@ namespace Glare {
 		public:
 			Slot_map_iterator_out_of_range(std::string s) :Glare_error {s}{};
 		};
+
+		class Slot_map_index_out_of_range : public Glare_error {
+			Slot_map_index_out_of_range(std::string s) :Glare_error {s}{};
+		};
 	}
 }
 
