@@ -17,6 +17,7 @@ namespace Glare {
 		};
 
 		class Slot_map_out_of_range : public Glare_error {
+		public:
 			Slot_map_out_of_range(std::string s) :Glare_error {std::move(s)}{};
 		};
 	}

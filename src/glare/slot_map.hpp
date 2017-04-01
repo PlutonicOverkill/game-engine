@@ -97,7 +97,7 @@ namespace Glare {
 			template<bool U>
 			explicit operator iterator_base<U>() const;
 			template<bool U>
-			explicit operator pointer_base<U>();
+			explicit operator pointer_base<U>() const;
 		private:
 			iterator_type ptr;
 			Direct_index index;
@@ -414,7 +414,7 @@ template<bool U>
 bool Glare::Slot_map<T>::iterator_base<Is_const>::operator!=
 (Glare::Slot_map<T>::iterator_base<U> rhs) const
 {
-	return !(this == rhs);
+	return !(*this == rhs);
 }
 
 template<typename T>
@@ -629,11 +629,11 @@ typename Glare::Slot_map<T>::const_iterator Glare::Slot_map<T>::cend() const
 template<typename T>
 template<bool Is_const>
 template<bool U>
-Glare::Slot_map<T>::iterator_base<Is_const>::operator Glare::Slot_map<T>::pointer_base<U>()
+Glare::Slot_map<T>::iterator_base<Is_const>::operator
+Glare::Slot_map<T>::pointer_base<U>() const
 {
-	const Index redirect {elem[index].index};
-	const Counter count {elem_indirect[redirect].counter};
-	return {ptr, redirect, counter};
+	const Checked_index redirect {ptr->elem_indirect[index]};
+	return {ptr, redirect.index, redirect.counter};
 }
 
 template<typename T>
@@ -666,35 +666,10 @@ const T& Glare::Slot_map<T>::operator[](Direct_index index) const
 template<typename T>
 T& Glare::Slot_map<T>::operator[](Direct_index index)
 {
-	if (index < 0 || index >= elem.size)
-		throw Index_out_of_range("Slot_map indexed with out of range index");
+	if (index < 0 || index >= elem.size())
+		throw Out_of_range("Slot_map indexed with out of range index");
 	else
-		return elem[index];
-}
-
-template<typename T>
-template<bool Is_const>
-template<bool U>
-Glare::Slot_map<T>::pointer_base<Is_const>::operator pointer_base<U>() const
-{
-	return {ptr, index, counter};
-}
-
-template<typename T>
-template<bool Is_const>
-template<bool U>
-Glare::Slot_map<T>::iterator_base<Is_const>::operator iterator_base<U>() const
-{
-	return {ptr, index};
-}
-
-template<typename T>
-template<bool Is_const>
-template<bool U>
-Glare::Slot_map<T>::iterator_base<Is_const>::operator pointer_base<U>()
-{
-	auto redirect = ptr->elem_indirect[index];
-	return {ptr, redirect.index, redirect.counter};
+		return elem[index].val;
 }
 
 #endif // !GLARE_SLOT_MAP_HPP
