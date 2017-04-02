@@ -170,3 +170,16 @@ TEST(SlotMap, ArrowOperator)
 
 	EXPECT_EQ(sm[2], (std::pair<int,double>{5,6.0}));
 }
+
+TEST(SlotMap, AddDefaultConstructor)
+{
+	Glare::Slot_map<int> sm;
+
+	auto p1 = sm.add();
+	auto p2 = sm.buffered_add();
+
+	sm.clean_buffers();
+
+	EXPECT_EQ(*p1, 0);
+	EXPECT_EQ(*p2, 0);
+}

@@ -118,10 +118,10 @@ namespace Glare {
 		Slot_map(std::initializer_list<T>);
 		Slot_map& operator=(std::initializer_list<T>);
 
-		pointer add(T);
+		pointer add(T = {});
 		Slot_map& remove(Direct_index);
 
-		pointer buffered_add(T);
+		pointer buffered_add(T = {});
 		Slot_map& buffered_remove(Direct_index);
 
 		Slot_map& clean_buffers();
