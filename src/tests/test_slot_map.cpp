@@ -121,7 +121,7 @@ TEST(SlotMap, InitializerList)
 TEST(SlotMap, Iterator)
 {
 	Glare::Slot_map<int> sm {0, 1, 2, 3};
-	
+
 	{ // TODO: update when VC++ is standards compliant
 		auto iter = sm.begin();
 		int i {0};
@@ -148,4 +148,25 @@ TEST(SlotMap, Iterator)
 	EXPECT_EQ(*(iter - 1), 42); // sm[0]
 
 	EXPECT_EQ(sm.end() - sm.begin(), sm.size());
+}
+
+TEST(SlotMap, ArrowOperator)
+{
+	Glare::Slot_map<std::pair<int, double>> sm;
+
+	auto p1 = sm.add({1,2.0});
+	ASSERT_TRUE(p1);
+	EXPECT_EQ(p1->first, 1);
+	EXPECT_EQ(p1->second, 2.0);
+
+	auto iter = sm.begin();
+	EXPECT_EQ(iter->first, 1);
+	EXPECT_EQ(iter->second, 2.0);
+
+	sm.add({3,4.0});
+	sm.add({5,6.0});
+
+	EXPECT_EQ(sm[1].first, 3);
+
+	EXPECT_EQ(sm[2], (std::pair<int,double>{5,6.0}));
 }

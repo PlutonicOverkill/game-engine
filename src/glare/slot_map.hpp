@@ -235,7 +235,7 @@ template<typename T>
 template<bool Is_const>
 const T* Glare::Slot_map<T>::pointer_base<Is_const>::operator->() const
 {
-	if (!is_valid()) throw Pointer_not_valid {"Invalid pointer dereferenced"};
+	if (!is_valid()) throw Not_valid {"Invalid pointer dereferenced"};
 
 	const Direct_index redirect {ptr->elem_indirect[index].index};
 	return &(ptr->elem[redirect].val);
@@ -246,7 +246,7 @@ template<bool Is_const>
 T* Glare::Slot_map<T>::pointer_base<Is_const>::operator->()
 {
 	static_assert(!Is_const, "pointer is constant");
-	if (!is_valid()) throw Pointer_not_valid {"Invalid pointer dereferenced"};
+	if (!is_valid()) throw Not_valid {"Invalid pointer dereferenced"};
 
 	const Direct_index redirect {ptr->elem_indirect[index].index};
 	return &(ptr->elem[redirect].val);
