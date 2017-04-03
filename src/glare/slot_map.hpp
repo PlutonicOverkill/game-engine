@@ -26,7 +26,7 @@ namespace Glare {
 		template<bool Is_const>
 		class iterator_base;
 
-		// long-term handle, intended primarily for objects to safetly refer to others
+		// long-term handle, intended primarily for objects to safely refer to others
 		// "knows" which container it belongs to
 		template<bool Is_const>
 		class pointer_base {

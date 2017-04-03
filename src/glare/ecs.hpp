@@ -6,10 +6,8 @@
 namespace Glare {
 	// Entity component system
 	namespace Ecs {
-		/*
-		A manager class, how original
-		T is a list of all the component types usable by Entities
-		*/
+		// a manager class, how original
+		// T is a list of all the component types usable by Entities
 		template<typename... T>
 		class Entity_manager {
 
