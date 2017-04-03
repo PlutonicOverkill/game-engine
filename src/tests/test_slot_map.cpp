@@ -183,3 +183,82 @@ TEST(SlotMap, AddDefaultConstructor)
 	EXPECT_EQ(*p1, 0);
 	EXPECT_EQ(*p2, 0);
 }
+
+TEST(SlotMap, PointerDefaultConstructor)
+{
+	Glare::Slot_map<int>::pointer p;
+	EXPECT_FALSE(p);
+}
+
+TEST(SlotMap, IteratorConversions)
+{
+	using Iterator = typename Glare::Slot_map<int>::iterator;
+	using Const_iterator = typename Glare::Slot_map<int>::const_iterator;
+
+	Glare::Slot_map<int> sm;
+	sm.add(42);
+
+	Const_iterator cp1 {sm.cbegin()};
+	Const_iterator cp2 {cp1};
+
+	EXPECT_EQ(cp1, cp2);
+	EXPECT_EQ(*cp1, 42);
+
+	Iterator p1 {sm.begin()};
+	Iterator p2 {p1};
+
+	EXPECT_EQ(p1, p2);
+	EXPECT_EQ(cp1, p1);
+
+	Const_iterator p3 {p1};
+
+	EXPECT_EQ(p1, p3);
+}
+
+TEST(SlotMap, PointerConversions)
+{
+	using Pointer = typename Glare::Slot_map<int>::pointer;
+	using Const_pointer = typename Glare::Slot_map<int>::const_pointer;
+
+	Glare::Slot_map<int> sm;
+	Pointer p1 {sm.add(42)};
+
+	ASSERT_TRUE(p1);
+
+	EXPECT_EQ(p1, sm.begin());
+	EXPECT_EQ(p1, sm.cbegin());
+	EXPECT_EQ(*p1, 42);
+
+	Pointer p2 {p1};
+	ASSERT_TRUE(p2);
+	EXPECT_EQ(p1, p2);
+
+	Const_pointer p3 {p1};
+	ASSERT_TRUE(p3);
+	EXPECT_EQ(p3, sm.begin());
+	EXPECT_EQ(p3, sm.cbegin());
+	EXPECT_EQ(p1, p3);
+}
+
+TEST(SlotMap, IteratorToPointerConversions)
+{
+	using Iterator = typename Glare::Slot_map<int>::iterator;
+	using Pointer = typename Glare::Slot_map<int>::pointer;
+	using Const_pointer = typename Glare::Slot_map<int>::const_pointer;
+
+	Glare::Slot_map<int> sm;
+	sm.add(42);
+
+	Iterator p1 {sm.begin()};
+	EXPECT_EQ(*p1, 42);
+
+	Pointer p2 {p1};
+	ASSERT_TRUE(p2);
+	EXPECT_EQ(p1, p2);
+	EXPECT_EQ(*p2, 42);
+
+	Const_pointer p3 {p1};
+	ASSERT_TRUE(p3);
+	EXPECT_EQ(p1, p3);
+	EXPECT_EQ(*p3, 42);
+}
