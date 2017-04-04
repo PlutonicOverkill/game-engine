@@ -20,6 +20,7 @@ set(GLARE_UNIT_TEST Glare_unit_test)
 set(GLARE_TEST_SOURCES
 	src/tests/test.cpp
 	src/tests/test_slot_map.cpp
+	src/tests/test_entity_manager.cpp
 )
 
 add_subdirectory(src/lib/gtest)
@@ -38,7 +39,11 @@ target_link_libraries(${GLARE_UNIT_TEST} gtest)
 
 if(MSVC)
 	# disable stupid size_t conversion warnings
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /wd4267 /wd4100")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /wd4267 /wd4100 /std:c++latest")
+
+	# HACK to get gtest working with vc++ 2017
+	# see https://github.com/google/googletest/issues/1036
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DGTEST_HAS_TR1_TUPLE=0 /DGTEST_HAS_STD_TUPLE=1")
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++1z")
     if(NOT WIN32)
