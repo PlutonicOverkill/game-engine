@@ -40,13 +40,10 @@ namespace Glare {
 			public:
 
 			private:
-				// safe pointer to each component type
 				std::tuple<Impl::Slot_pointer<T>...> ptr;
 			};
 		private:
-			// Impl::Variadic_cont<Slot_map, Impl::Typelist<Impl::Indexed_element<T>...>> vec;
-
-			Slot_map<std::tuple<Impl::Slot_pointer<T>...>> ents;
+			Impl::Variadic_cont<Slot_map, Impl::Typelist<Impl::Indexed_element<T>...>> vec;
 		};
 	}
 }

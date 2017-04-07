@@ -11,9 +11,9 @@ namespace Glare {
 			Glare_error(std::string s) :std::runtime_error{std::move(s)}{};
 		};
 
-		class Slot_map_index_not_valid : public Glare_error {
+		class Slot_map_pointer_not_valid : public Glare_error {
 		public:
-			Slot_map_index_not_valid(std::string s) :Glare_error {std::move(s)}{};
+			Slot_map_pointer_not_valid(std::string s) :Glare_error {std::move(s)}{};
 		};
 
 		class Slot_map_out_of_range : public Glare_error {
