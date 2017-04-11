@@ -211,8 +211,8 @@ TEST(SlotMap, IteratorConversions)
 
 TEST(SlotMap, PointerConversions)
 {
-	using Pointer = typename Glare::Slot_map<int>::pointer;
-	using Const_pointer = typename Glare::Slot_map<int>::const_pointer;
+	using Pointer = typename Glare::Slot_map<int>::Stable_index;
+	using Const_pointer = typename Glare::Slot_map<int>::Stable_const_index;
 
 	Glare::Slot_map<int> sm;
 	Pointer p1 {sm.add(42)};
@@ -237,8 +237,8 @@ TEST(SlotMap, PointerConversions)
 TEST(SlotMap, IteratorToPointerConversions)
 {
 	using Iterator = typename Glare::Slot_map<int>::iterator;
-	using Pointer = typename Glare::Slot_map<int>::pointer;
-	using Const_pointer = typename Glare::Slot_map<int>::const_pointer;
+	using Pointer = typename Glare::Slot_map<int>::Stable_index;
+	using Const_pointer = typename Glare::Slot_map<int>::Stable_const_index;
 
 	Glare::Slot_map<int> sm;
 	sm.add(42);
