@@ -11,55 +11,55 @@ TEST(SlotMap, AddRemove)
 {
 	Glare::Slot_map<int> sm;
 	auto p1 = sm.add(1);
-	ASSERT_TRUE(p1);
-	EXPECT_EQ(*p1, 1);
+	ASSERT_TRUE(sm.is_valid(p1));
+	EXPECT_EQ(sm[p1], 1);
 	EXPECT_EQ(sm.size(), 1);
 
 	auto p2 = sm.add(2);
-	ASSERT_TRUE(p2);
-	EXPECT_EQ(*p2, 2);
+	ASSERT_TRUE(sm.is_valid(p2));
+	EXPECT_EQ(sm[p2], 2);
 	EXPECT_EQ(sm.size(), 2);
 
-	p1.remove();
-	EXPECT_FALSE(p1);
+	sm.remove(p1);
+	EXPECT_FALSE(sm.is_valid(p1));
 	EXPECT_EQ(sm.size(), 1);
-	ASSERT_TRUE(p2);
-	EXPECT_EQ(*p2, 2);
+	ASSERT_TRUE(sm.is_valid(p2));
+	EXPECT_EQ(sm[p2], 2);
 
 	auto p3 = sm.add(3);
-	ASSERT_TRUE(p3);
-	EXPECT_EQ(*p3, 3);
+	ASSERT_TRUE(sm.is_valid(p3));
+	EXPECT_EQ(sm[p3], 3);
 	EXPECT_EQ(sm.size(), 2);
 
-	ASSERT_TRUE(p2);
-	EXPECT_EQ(*p2, 2);
+	ASSERT_TRUE(sm.is_valid(p2));
+	EXPECT_EQ(sm[p2], 2);
 
-	p3.remove();
+	sm.remove(p3);
 
-	EXPECT_FALSE(p3);
+	EXPECT_FALSE(sm.is_valid(p3));
 
-	ASSERT_TRUE(p2);
-	EXPECT_EQ(*p2, 2);
+	ASSERT_TRUE(sm.is_valid(p2));
+	EXPECT_EQ(sm[p2], 2);
 }
 
 TEST(SlotMap, BufferedAddRemove)
 {
 	Glare::Slot_map<int> sm;
 
-	auto p1 = sm.buffered_add(1);
 	auto p2 = sm.buffered_add(2);
-	p1.buffered_remove();
+	auto p1 = sm.buffered_add(1);
+	sm.buffered_remove(p1);
 
 	EXPECT_EQ(sm.size(), 0);
-	EXPECT_FALSE(p1);
-	EXPECT_FALSE(p2);
+	EXPECT_FALSE(sm.is_valid(p1));
+	EXPECT_FALSE(sm.is_valid(p2));
 
 	sm.clean_buffers();
 
 	EXPECT_EQ(sm.size(), 1);
-	EXPECT_FALSE(p1);
-	ASSERT_TRUE(p2);
-	EXPECT_EQ(*p2, 2);
+	EXPECT_FALSE(sm.is_valid(p1));
+	ASSERT_TRUE(sm.is_valid(p2));
+	EXPECT_EQ(sm[p2], 2);
 }
 
 TEST(SlotMap, MultipleRemove)
@@ -67,13 +67,13 @@ TEST(SlotMap, MultipleRemove)
 	Glare::Slot_map<int> sm;
 	auto p = sm.add(42);
 	EXPECT_EQ(sm.size(), 1);
-	ASSERT_TRUE(p);
-	EXPECT_EQ(*p, 42);
+	ASSERT_TRUE(sm.is_valid(p));
+	EXPECT_EQ(sm[p], 42);
 
 	for (int i = 0; i < 3; ++i) {
-		p.remove();
+		sm.remove(p);
 		EXPECT_EQ(sm.size(), 0);
-		EXPECT_FALSE(p);
+		EXPECT_FALSE(sm.is_valid(p));
 	}
 }
 
@@ -82,19 +82,19 @@ TEST(SlotMap, MultipleBufferedRemove)
 	Glare::Slot_map<int> sm;
 	auto p = sm.add(42);
 	EXPECT_EQ(sm.size(), 1);
-	ASSERT_TRUE(p);
-	EXPECT_EQ(*p, 42);
+	ASSERT_TRUE(sm.is_valid(p));
+	EXPECT_EQ(sm[p], 42);
 
 	for (int i = 0; i < 3; ++i) {
-		p.buffered_remove();
+		sm.buffered_remove(p);
 		EXPECT_EQ(sm.size(), 1);
-		ASSERT_TRUE(p);
-		EXPECT_EQ(*p, 42);
+		ASSERT_TRUE(sm.is_valid(p));
+		EXPECT_EQ(sm[p], 42);
 	}
 
 	sm.clean_buffers();
 	EXPECT_EQ(sm.size(), 0);
-	EXPECT_FALSE(p);
+	EXPECT_FALSE(sm.is_valid(p));
 }
 
 TEST(SlotMap, Clear)
@@ -155,9 +155,9 @@ TEST(SlotMap, ArrowOperator)
 	Glare::Slot_map<std::pair<int, double>> sm;
 
 	auto p1 = sm.add({1,2.0});
-	ASSERT_TRUE(p1);
-	EXPECT_EQ(p1->first, 1);
-	EXPECT_EQ(p1->second, 2.0);
+	ASSERT_TRUE(sm.is_valid(p1));
+	EXPECT_EQ(sm[p1].first, 1);
+	EXPECT_EQ(sm[p1].second, 2.0);
 
 	auto iter = sm.begin();
 	EXPECT_EQ(iter->first, 1);
@@ -180,14 +180,8 @@ TEST(SlotMap, AddDefaultConstructor)
 
 	sm.clean_buffers();
 
-	EXPECT_EQ(*p1, 0);
-	EXPECT_EQ(*p2, 0);
-}
-
-TEST(SlotMap, PointerDefaultConstructor)
-{
-	Glare::Slot_map<int>::pointer p;
-	EXPECT_FALSE(p);
+	EXPECT_EQ(sm[p1], 0);
+	EXPECT_EQ(sm[p2], 0);
 }
 
 TEST(SlotMap, IteratorConversions)
@@ -223,18 +217,18 @@ TEST(SlotMap, PointerConversions)
 	Glare::Slot_map<int> sm;
 	Pointer p1 {sm.add(42)};
 
-	ASSERT_TRUE(p1);
+	ASSERT_TRUE(sm.is_valid(p1));
 
 	EXPECT_EQ(p1, sm.begin());
 	EXPECT_EQ(p1, sm.cbegin());
-	EXPECT_EQ(*p1, 42);
+	EXPECT_EQ(sm[p1], 42);
 
 	Pointer p2 {p1};
-	ASSERT_TRUE(p2);
+	ASSERT_TRUE(sm.is_valid(p2));
 	EXPECT_EQ(p1, p2);
 
 	Const_pointer p3 {p1};
-	ASSERT_TRUE(p3);
+	ASSERT_TRUE(sm.is_valid(p3));
 	EXPECT_EQ(p3, sm.begin());
 	EXPECT_EQ(p3, sm.cbegin());
 	EXPECT_EQ(p1, p3);
@@ -253,12 +247,12 @@ TEST(SlotMap, IteratorToPointerConversions)
 	EXPECT_EQ(*p1, 42);
 
 	Pointer p2 {p1};
-	ASSERT_TRUE(p2);
+	ASSERT_TRUE(sm.is_valid(p2));
 	EXPECT_EQ(p1, p2);
-	EXPECT_EQ(*p2, 42);
+	EXPECT_EQ(sm[p2], 42);
 
 	Const_pointer p3 {p1};
-	ASSERT_TRUE(p3);
+	ASSERT_TRUE(sm.is_valid(p3));
 	EXPECT_EQ(p1, p3);
-	EXPECT_EQ(*p3, 42);
+	EXPECT_EQ(sm[p3], 42);
 }
