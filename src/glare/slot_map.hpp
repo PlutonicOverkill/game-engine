@@ -65,6 +65,9 @@ namespace Glare {
 		private:
 			Index index {null_index};
 			Counter counter {null_index};
+			// not storing a pointer complicates the implementation
+			// but it just seems wrong having hundreds of pointers
+			// lying around all pointing to the same object 
 		}; // Index_base
 
 		template<bool Is_const>
