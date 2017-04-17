@@ -116,9 +116,9 @@ namespace Glare {
 
 			// TODO: variadic overloads
 			template<typename U>
-			U* check_component(Stable_const_index) const;
+			const U* check_component(Stable_const_index) const;
 			template<typename U>
-			const U* check_component(Stable_index);
+			U* check_component(Stable_index);
 		private:
 			template<bool Is_const, typename U, typename... V>
 			bool has_component(Entity_base<Is_const>) const;
@@ -285,7 +285,7 @@ template<typename U>
 const U& Glare::Ecs::Entity_manager<T...>::component
 (typename Glare::Ecs::Entity_manager<T...>::Stable_const_index e) const
 {
-	return component(ents[e]);
+	return component<U>(ents[e]);
 }
 
 template<typename... T>
@@ -293,7 +293,31 @@ template<typename U>
 U& Glare::Ecs::Entity_manager<T...>::component
 (typename Glare::Ecs::Entity_manager<T...>::Stable_index e)
 {
-	return component(ents[e]);
+	return component<U>(ents[e]);
+}
+
+template<typename... T>
+template<typename U>
+U& Glare::Ecs::Entity_manager<T...>::make_component
+(typename Glare::Ecs::Entity_manager<T...>::Stable_index e)
+{
+	return make_component<U>(ents[e]);
+}
+
+template<typename... T>
+template<typename U>
+const U* Glare::Ecs::Entity_manager<T...>::check_component
+(typename Glare::Ecs::Entity_manager<T...>::Stable_const_index e) const
+{
+	return check_component<U>(ents[e]);
+}
+
+template<typename... T>
+template<typename U>
+U* Glare::Ecs::Entity_manager<T...>::check_component
+(typename Glare::Ecs::Entity_manager<T...>::Stable_index e)
+{
+	return check_component<U>(ents[e]);
 }
 
 template<typename... T>
@@ -338,7 +362,7 @@ U& Glare::Ecs::Entity_manager<T...>::make_component
 template<typename... T>
 template<typename U>
 const U* Glare::Ecs::Entity_manager<T...>::check_component
-(typename Glare::Ecs::Entity_manager<T...>::Const_entity) const
+(typename Glare::Ecs::Entity_manager<T...>::Const_entity e) const
 {
 	if (std::get<U>(components)
 		.is_valid(std::get<Glare::Slot_map<U>::Stable_index>(e)))
@@ -353,7 +377,7 @@ const U* Glare::Ecs::Entity_manager<T...>::check_component
 template<typename... T>
 template<typename U>
 U* Glare::Ecs::Entity_manager<T...>::check_component
-(typename Glare::Ecs::Entity_manager<T...>::Entity)
+(typename Glare::Ecs::Entity_manager<T...>::Entity e)
 {
 	if (std::get<U>(components)
 		.is_valid(std::get<Glare::Slot_map<U>::Stable_index>(e))) {
