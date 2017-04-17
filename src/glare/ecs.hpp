@@ -101,7 +101,7 @@ namespace Glare {
 
 			Stable_index add();
 
-			template<bool Is_const, typename U, typename... V>
+			template<bool Is_const, typename... U>
 			bool has_component(Index_base<Is_const>) const;
 
 			// TODO: variadic overloads
@@ -270,6 +270,14 @@ typename Glare::Ecs::Entity_manager<T...>::Range<U...>::const_iterator
 Glare::Ecs::Entity_manager<T...>::Range<U...>::cend() const
 {
 	return {ptr, ptr->ents.cend(), ptr->ents.cend()};
+}
+
+template<typename... T>
+template<bool Is_const, typename... U>
+bool Glare::Ecs::Entity_manager<T...>::has_component
+(Glare::Ecs::Entity_manager<T...>::Index_base<Is_const>) const
+{
+	return has_component<Is_const, U...>(ents[e]);
 }
 
 template<typename... T>
