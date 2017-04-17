@@ -267,6 +267,13 @@ Glare::Ecs::Entity_manager<T...>::Range<U...>::cend() const
 }
 
 template<typename... T>
+typename Glare::Ecs::Entity_manager<T...>::Stable_index
+Glare::Ecs::Entity_manager<T...>::add()
+{
+	return ents.add();
+}
+
+template<typename... T>
 template<bool Is_const, typename... U>
 bool Glare::Ecs::Entity_manager<T...>::has_component
 (typename Glare::Ecs::Entity_manager<T...>::Index_base<Is_const> e) const
