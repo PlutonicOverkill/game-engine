@@ -275,19 +275,51 @@ Glare::Ecs::Entity_manager<T...>::Range<U...>::cend() const
 template<typename... T>
 template<bool Is_const, typename... U>
 bool Glare::Ecs::Entity_manager<T...>::has_component
-(Glare::Ecs::Entity_manager<T...>::Index_base<Is_const>) const
+(typename Glare::Ecs::Entity_manager<T...>::Index_base<Is_const> e) const
 {
 	return has_component<Is_const, U...>(ents[e]);
 }
 
 template<typename... T>
+template<typename U>
+const U& Glare::Ecs::Entity_manager<T...>::component
+(typename Glare::Ecs::Entity_manager<T...>::Stable_const_index e) const
+{
+	return component(ents[e]);
+}
+
+template<typename... T>
+template<typename U>
+U& Glare::Ecs::Entity_manager<T...>::component
+(typename Glare::Ecs::Entity_manager<T...>::Stable_index e)
+{
+	return component(ents[e]);
+}
+
+template<typename... T>
 template<bool Is_const, typename U, typename... V>
 bool Glare::Ecs::Entity_manager<T...>::has_component
-(Glare::Ecs::Entity_manager<T...>::Entity_base<Is_const> e) const
+(typename Glare::Ecs::Entity_manager<T...>::Entity_base<Is_const> e) const
 {
 	return std::get<U>(components).is_valid
 	(std::get<Glare::Slot_map<U>::Stable_index>(e))
 		&& (sizeof...(V) > 0) ? has_component<Is_const, V...>(e) : true;
+}
+
+template<typename... T>
+template<typename U>
+const U& Glare::Ecs::Entity_manager<T...>::component
+(typename Glare::Ecs::Entity_manager<T...>::Const_entity e) const
+{
+	return std::get<U>(components)[std::get<Slot_map<U>::Stable_index>(e)];
+}
+
+template<typename... T>
+template<typename U>
+U& Glare::Ecs::Entity_manager<T...>::component
+(typename Glare::Ecs::Entity_manager<T...>::Entity e)
+{
+	return std::get<U>(components)[std::get<Slot_map<U>::Stable_index>(e)];
 }
 
 #endif // !GLARE_ECS_HPP
