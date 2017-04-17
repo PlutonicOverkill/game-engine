@@ -26,22 +26,31 @@ namespace Glare {
 		// T is a list of all the component types usable by Entities
 		template<typename... T>
 		class Entity_manager {
+			template<bool Is_const>
+			class Entity_base;
+
+			using Entity = typename Entity_base<false>;
+			using Const_entity = typename Entity_base<true>;
+
+			// only a nested class to avoid cyclic dependencies
+			template<typename U>
+			struct Indexed_element {
+				U val;
+				typename Slot_map<Entity>::Stable_index index;
+			};
 		public:
 			Entity_manager() = default;
 
 			template<bool Is_const>
 			class Entity_base {
 			public:
-
+				friend class Entity_manager;
 			private:
 				template<typename U>
-				using Ptr_type = typename Slot_map<U>::template Index_base<Is_const>;
+				using Ptr_type = typename Slot_map<Indexed_element<U>>::template Index_base<Is_const>;
 				// safe pointer to each component type
 				std::tuple<Ptr_type<T>...> ptr;
 			}; // Entity_base
-
-			using Entity = typename Entity_base<false>;
-			using Const_entity = typename Entity_base<true>;
 
 			template<bool Is_const>
 			using Index_base = typename Slot_map<Entity>::template Index_base<Is_const>;
@@ -132,13 +141,6 @@ namespace Glare {
 			const U* check_component(Const_entity) const;
 			template<typename U>
 			U* check_component(Entity);
-		
-			// only a nested class to avoid cyclic dependencies
-			template<typename U>
-			struct Indexed_element {
-				U val;
-				typename Slot_map<Entity>::Stable_index index;
-			};
 
 			Impl::Variadic_cont<Slot_map, Impl::Typelist<Indexed_element<T>...>> components;
 
@@ -326,8 +328,8 @@ template<bool Is_const, typename U, typename... V>
 bool Glare::Ecs::Entity_manager<T...>::has_component
 (typename Glare::Ecs::Entity_manager<T...>::Entity_base<Is_const> e) const
 {
-	return std::get<U>(components).is_valid
-		(std::get<Glare::Slot_map<U>::Stable_index>(e))
+	return std::get<Glare::Slot_map<Indexed_element<U>>>(components).is_valid
+		(std::get<Glare::Slot_map<Indexed_element<U>>::Stable_index>(e.ptr))
 		&& (sizeof...(V) > 0) ? has_component<Is_const, V...>(e) : true;
 }
 
@@ -336,7 +338,8 @@ template<typename U>
 const U& Glare::Ecs::Entity_manager<T...>::component
 (typename Glare::Ecs::Entity_manager<T...>::Const_entity e) const
 {
-	return std::get<U>(components)[std::get<Slot_map<U>::Stable_index>(e)];
+	return std::get<Glare::Slot_map<Indexed_element<U>>>(components)
+		[std::get<Slot_map<Indexed_element<U>>::Stable_index>(e.ptr)].val;
 }
 
 template<typename... T>
@@ -344,7 +347,8 @@ template<typename U>
 U& Glare::Ecs::Entity_manager<T...>::component
 (typename Glare::Ecs::Entity_manager<T...>::Entity e)
 {
-	return std::get<U>(components)[std::get<Slot_map<U>::Stable_index>(e)];
+	return std::get<Glare::Slot_map<Indexed_element<U>>>(components)
+		[std::get<Slot_map<Indexed_element<U>>::Stable_index>(e.ptr)].val;
 }
 
 template<typename... T>
@@ -352,12 +356,14 @@ template<typename U>
 U& Glare::Ecs::Entity_manager<T...>::make_component
 (typename Glare::Ecs::Entity_manager<T...>::Entity e)
 {
-	if (!std::get<U>(components)
-		.is_valid(std::get<Glare::Slot_map<U>::Stable_index>(e)))
+	if (!std::get<Glare::Slot_map<Indexed_element<U>>>(components)
+		.is_valid(std::get<Glare::Slot_map<Indexed_element<U>>::Stable_index>(e.ptr)))
 	{
-		std::get<Glare::Slot_map<U>::Stable_index>(e) = std::get<U>(components).add();
+		std::get<Glare::Slot_map<Indexed_element<U>>::Stable_index>(e.ptr).val
+			= std::get<Glare::Slot_map<Indexed_element<U>>>(components).add();
 	}
-	return std::get<U>(components)[std::get<Slot_map<U>::Stable_index>(e)];
+	return std::get<Glare::Slot_map<U>>(components)
+		[std::get<Slot_map<U>::Stable_index>(e.ptr)];
 }
 
 template<typename... T>
@@ -365,10 +371,11 @@ template<typename U>
 const U* Glare::Ecs::Entity_manager<T...>::check_component
 (typename Glare::Ecs::Entity_manager<T...>::Const_entity e) const
 {
-	if (std::get<U>(components)
-		.is_valid(std::get<Glare::Slot_map<U>::Stable_index>(e)))
+	if (std::get<Glare::Slot_map<Indexed_element<U>>>(components)
+		.is_valid(std::get<Glare::Slot_map<Indexed_element<U>>::Stable_index>(e.ptr)))
 	{
-		return &(std::get<U>(components)[std::get<Glare::Slot_map<U>::Stable_index>(e)]);
+		return &(std::get<Glare::Slot_map<Indexed_element<U>>>(components)
+				 [std::get<Glare::Slot_map<Indexed_element<U>>::Stable_index>(e.ptr)].val);
 	}
 	else {
 		return nullptr;
@@ -380,9 +387,10 @@ template<typename U>
 U* Glare::Ecs::Entity_manager<T...>::check_component
 (typename Glare::Ecs::Entity_manager<T...>::Entity e)
 {
-	if (std::get<U>(components)
-		.is_valid(std::get<Glare::Slot_map<U>::Stable_index>(e))) {
-		return &(std::get<U>(components)[std::get<Glare::Slot_map<U>::Stable_index>(e)]);
+	if (std::get<Glare::Slot_map<Indexed_element<U>>>(components)
+		.is_valid(std::get<Glare::Slot_map<Indexed_element<U>>::Stable_index>(e.ptr))) {
+		return &(std::get<Glare::Slot_map<Indexed_element<U>>>(components)
+				 [std::get<Glare::Slot_map<Indexed_element<U>>::Stable_index>(e.ptr)].val);
 	} else {
 		return nullptr;
 	}

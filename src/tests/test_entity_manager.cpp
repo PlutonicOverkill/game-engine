@@ -12,13 +12,13 @@ TEST(EntityManager, Constructor)
 {
 	Glare::Ecs::Entity_manager<TestA, TestB, TestC> em;
 
-	/*auto p1 = em.add();
+	auto p1 = em.add();
 	auto p2 = em.add();
 	auto p3 = em.add();
 	auto p4 = em.add();
 
 	em.component<TestA>(p1).s = "1 TestA";
-	em.component<TestC>(p1).s = "1 TestC";
+	/*em.component<TestC>(p1).s = "1 TestC";
 
 	em.component<TestA>(p2) = {"2 TestA"};
 	em.component<TestB>(p2) = {"2 TestB"};
