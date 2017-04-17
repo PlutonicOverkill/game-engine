@@ -135,9 +135,9 @@ namespace Glare {
 
 			// TODO: variadic overloads
 			template<typename U>
-			U* check_component(Const_entity) const;
+			const U* check_component(Const_entity) const;
 			template<typename U>
-			const U* check_component(Entity);
+			U* check_component(Entity);
 		
 			// only a nested class to avoid cyclic dependencies
 			template<typename U>
@@ -337,7 +337,7 @@ U& Glare::Ecs::Entity_manager<T...>::make_component
 
 template<typename... T>
 template<typename U>
-U* Glare::Ecs::Entity_manager<T...>::check_component
+const U* Glare::Ecs::Entity_manager<T...>::check_component
 (typename Glare::Ecs::Entity_manager<T...>::Const_entity) const
 {
 	if (std::get<U>(components)
@@ -346,6 +346,19 @@ U* Glare::Ecs::Entity_manager<T...>::check_component
 		return &(std::get<U>(components)[std::get<Glare::Slot_map<U>::Stable_index>(e)]);
 	}
 	else {
+		return nullptr;
+	}
+}
+
+template<typename... T>
+template<typename U>
+U* Glare::Ecs::Entity_manager<T...>::check_component
+(typename Glare::Ecs::Entity_manager<T...>::Entity)
+{
+	if (std::get<U>(components)
+		.is_valid(std::get<Glare::Slot_map<U>::Stable_index>(e))) {
+		return &(std::get<U>(components)[std::get<Glare::Slot_map<U>::Stable_index>(e)]);
+	} else {
 		return nullptr;
 	}
 }
