@@ -302,7 +302,7 @@ bool Glare::Ecs::Entity_manager<T...>::has_component
 (typename Glare::Ecs::Entity_manager<T...>::Entity_base<Is_const> e) const
 {
 	return std::get<U>(components).is_valid
-	(std::get<Glare::Slot_map<U>::Stable_index>(e))
+		(std::get<Glare::Slot_map<U>::Stable_index>(e))
 		&& (sizeof...(V) > 0) ? has_component<Is_const, V...>(e) : true;
 }
 
@@ -319,6 +319,19 @@ template<typename U>
 U& Glare::Ecs::Entity_manager<T...>::component
 (typename Glare::Ecs::Entity_manager<T...>::Entity e)
 {
+	return std::get<U>(components)[std::get<Slot_map<U>::Stable_index>(e)];
+}
+
+template<typename... T>
+template<typename U>
+U& Glare::Ecs::Entity_manager<T...>::make_component
+(typename Glare::Ecs::Entity_manager<T...>::Entity e)
+{
+	if (!std::get<U>(components)
+		.is_valid(std::get<Glare::Slot_map<U>::Stable_index>(e)))
+	{
+		std::get<Glare::Slot_map<U>::Stable_index>(e) = std::get<U>(components).add();
+	}
 	return std::get<U>(components)[std::get<Slot_map<U>::Stable_index>(e)];
 }
 
