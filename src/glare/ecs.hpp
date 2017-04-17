@@ -44,15 +44,9 @@ namespace Glare {
 			using Const_entity = typename Entity_base<true>;
 
 			template<bool Is_const>
-			class Index_base {
-			public:
-
-			private:
-				typename Slot_map<Entity>::template Index_base<Is_const> ptr;
-			};
-
-			using Stable_index = typename Index_base<false>;
-			using Stable_const_index = typename Index_base<true>;
+			using Index_base = typename Slot_map<Entity>::template Index_base<Is_const>;
+			using Stable_index = typename Slot_map<Entity>::template Index_base<false>;
+			using Stable_const_index = typename Slot_map<Entity>::template Index_base<true>;
 
 			template<typename... U>
 			class Range {
