@@ -22,13 +22,6 @@ namespace Glare {
 			using Variadic_cont = decltype(typelist_helper<Cont>(std::declval<T>()));
 		}
 
-		// Slot_map<T0>::Index_base<Is_const>
-		// Slot_map<T1>::Index_base<Is_const>
-		// ...
-		// Slot_map<TN>::Index_base<Is_const>
-
-		// std::tuple<Index_base<Slot_map<T>...>> ptr
-
 		// a manager class, how original
 		// T is a list of all the component types usable by Entities
 		template<typename... T>
@@ -41,12 +34,25 @@ namespace Glare {
 			public:
 
 			private:
+				template<typename U>
+				using Ptr_type = typename Slot_map<U>::template Index_base<Is_const>;
 				// safe pointer to each component type
-				// std::tuple<> ptr;
+				std::tuple<Ptr_type<T>...> ptr;
 			}; // Entity_base
 
 			using Entity = typename Entity_base<false>;
 			using Const_entity = typename Entity_base<true>;
+
+			template<bool Is_const>
+			class Index_base {
+			public:
+
+			private:
+				typename Slot_map<Entity>::template Index_base<Is_const> ptr;
+			};
+
+			using Stable_index = typename Index_base<false>;
+			using Stable_const_index = typename Index_base<true>;
 
 			template<typename... U>
 			class Range {
@@ -93,11 +99,28 @@ namespace Glare {
 			template<typename... U>
 			Range<U...> filter();
 
-			Entity add();
+			Stable_index add();
 
 			template<bool Is_const, typename U, typename... V>
-			bool has_component(Entity_base<Is_const>) const;
-			template<bool Is_const, typename U>
+			bool has_component(Index_base<Is_const>) const;
+
+			// TODO: variadic overloads
+			template<typename U>
+			const U& component(Stable_const_index) const;
+			template<typename U>
+			U& component(Stable_index);
+
+			// TODO: variadic overloads
+			template<typename U>
+			U& make_component(Stable_index);
+
+			// TODO: variadic overloads
+			template<typename U>
+			U* check_component(Stable_const_index) const;
+			template<typename U>
+			const U* check_component(Stable_index);
+		private:
+			template<bool Is_const, typename U, typename... V>
 			bool has_component(Entity_base<Is_const>) const;
 
 			// TODO: variadic overloads
@@ -115,7 +138,7 @@ namespace Glare {
 			U* check_component(Const_entity) const;
 			template<typename U>
 			const U* check_component(Entity);
-		private:
+		
 			// only a nested class to avoid cyclic dependencies
 			template<typename U>
 			struct Indexed_element {
@@ -168,6 +191,15 @@ Glare::Ecs::Entity_manager<T...>::Range<U...>::Iterator_base<Is_const>::operator
 		++iter;
 	} while (iter != end && !ptr->has_component<U...>(*iter));
 	return *this;
+}
+
+template<typename ...T>
+template<typename ...U>
+template<bool Is_const>
+typename Glare::Ecs::Entity_manager<T...>::Entity_base<Is_const>
+Glare::Ecs::Entity_manager<T...>::Range<U...>::Iterator_base<Is_const>::operator*()
+{
+	return *iter;
 }
 
 template<typename... T>
@@ -238,6 +270,16 @@ typename Glare::Ecs::Entity_manager<T...>::Range<U...>::const_iterator
 Glare::Ecs::Entity_manager<T...>::Range<U...>::cend() const
 {
 	return {ptr, ptr->ents.cend(), ptr->ents.cend()};
+}
+
+template<typename... T>
+template<bool Is_const, typename U, typename... V>
+bool Glare::Ecs::Entity_manager<T...>::has_component
+(Glare::Ecs::Entity_manager<T...>::Entity_base<Is_const> e) const
+{
+	return std::get<U>(components).is_valid
+	(std::get<Glare::Slot_map<U>::Stable_index>(e))
+		&& (sizeof...(V) > 0) ? has_component<Is_const, V...>(e) : true;
 }
 
 #endif // !GLARE_ECS_HPP
