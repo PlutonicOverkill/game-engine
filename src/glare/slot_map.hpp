@@ -638,6 +638,8 @@ template<bool U>
 Glare::Slot_map<T>::Iterator_base<Is_const>::operator
 Glare::Slot_map<T>::Index_base<U>() const
 {
+	static_assert(!Is_const || U, "Cannot convert from const to nonconst");
+	
 	const Checked_index redirect {ptr->elem_indirect[index]};
 	return {redirect.index, redirect.counter};
 }
@@ -648,6 +650,8 @@ template<bool U>
 Glare::Slot_map<T>::Index_base<Is_const>::operator
 Glare::Slot_map<T>::Index_base<U>() const
 {
+	static_assert(!Is_const || U, "Cannot convert from const to nonconst");
+
 	return {index, counter};
 }
 
@@ -657,6 +661,8 @@ template<bool U>
 Glare::Slot_map<T>::Iterator_base<Is_const>::operator
 Glare::Slot_map<T>::Iterator_base<U>() const
 {
+	static_assert(!Is_const || U, "Cannot convert from const to nonconst");
+
 	return {ptr, index};
 }
 
