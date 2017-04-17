@@ -335,4 +335,19 @@ U& Glare::Ecs::Entity_manager<T...>::make_component
 	return std::get<U>(components)[std::get<Slot_map<U>::Stable_index>(e)];
 }
 
+template<typename... T>
+template<typename U>
+U* Glare::Ecs::Entity_manager<T...>::check_component
+(typename Glare::Ecs::Entity_manager<T...>::Const_entity) const
+{
+	if (std::get<U>(components)
+		.is_valid(std::get<Glare::Slot_map<U>::Stable_index>(e)))
+	{
+		return &(std::get<U>(components)[std::get<Glare::Slot_map<U>::Stable_index>(e)]);
+	}
+	else {
+		return nullptr;
+	}
+}
+
 #endif // !GLARE_ECS_HPP
