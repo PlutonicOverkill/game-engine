@@ -45,35 +45,35 @@ TEST(EntityManager, Constructor)
 	// has_component(): return true if component exists
 
 	for (auto x : em.filter()) {
-//		TestA a = em.component<TestA>(p1); // throw if doesn't exist
-//
-//		if (em.has_component<TestB, TestC>(p3)) {
-//			// auto [x, y] = em.component<B, C>(p3); // C++17 only
-//
-//			// TODO
-//			// std::tuple<TestB, TestC> t = em.component<TestB, TestC>(p3);
-//
-//			TestB b = em.component<TestB>(p3);
-//		}
-//
-//		{
-//			// TODO
-//			// std::tuple<TestB*, TestC*> t = em.check_component<TestB, TestC>(p3);
-//			// TestB* b = std::get<TestB*>(x);
-//
-//			TestC* c = em.check_component<TestC>(p3);
-//		}
-//	}
-//
-//	for (auto x : em.filter<TestA>()) {
-//
-//	}
-//
-//	for (auto x : em.filter<TestA, TestB>()) {
-//
-//	}
-//
-//	for (auto x : em.filter<TestA, TestB, TestC>()) {
-//
+		TestA a = em.component<TestA>(p1); // throw if doesn't exist
+
+		if (em.has_component<TestB, TestC>(p3)) {
+			// auto [x, y] = em.component<B, C>(p3); // C++17 only
+
+			// TODO
+			// std::tuple<TestB, TestC> t = em.component<TestB, TestC>(p3);
+
+			TestB b = em.component<TestB>(p3);
+		}
+
+		{
+			// TODO
+			// std::tuple<TestB*, TestC*> t = em.check_component<TestB, TestC>(p3);
+			// TestB* b = std::get<TestB*>(x);
+
+			TestC* c = em.check_component<TestC>(p3);
+		}
+	}
+
+	for (auto x : em.filter<TestA>()) {
+
+	}
+
+	for (auto x : em.filter<TestA, TestB>()) {
+
+	}
+
+	for (auto x : em.filter<TestA, TestB, TestC>()) {
+
 	}
 }
