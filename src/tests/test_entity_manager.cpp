@@ -18,7 +18,7 @@ TEST(EntityManager, Constructor)
 	auto p4 = em.add();
 
 	em.component<TestA>(p1).s = "1 TestA";
-	/*em.component<TestC>(p1).s = "1 TestC";
+	em.component<TestC>(p1).s = "1 TestC";
 
 	em.component<TestA>(p2) = {"2 TestA"};
 	em.component<TestB>(p2) = {"2 TestB"};
@@ -28,7 +28,7 @@ TEST(EntityManager, Constructor)
 
 	em.component<TestA>(p4).s = "4 TestA";
 	em.component<TestB>(p4).s = "4 TestB";
-	em.component<TestC>(p4).s = "4 TestC";*/
+	em.component<TestC>(p4).s = "4 TestC";
 
 	/*
 		   p1 p2 p3 p4
@@ -44,7 +44,7 @@ TEST(EntityManager, Constructor)
 
 	// has_component(): return true if component exists
 
-//	for (auto x : em.filter()) {
+	for (auto x : em.filter()) {
 //		TestA a = em.component<TestA>(p1); // throw if doesn't exist
 //
 //		if (em.has_component<TestB, TestC>(p3)) {
@@ -75,5 +75,5 @@ TEST(EntityManager, Constructor)
 //
 //	for (auto x : em.filter<TestA, TestB, TestC>()) {
 //
-//	}
+	}
 }
