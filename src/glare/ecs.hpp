@@ -136,10 +136,6 @@ namespace Glare {
 
 			// TODO: variadic overloads
 			template<typename U>
-			U& make_component_impl(Entity);
-
-			// TODO: variadic overloads
-			template<typename U>
 			const U* check_component_impl(Const_entity) const;
 			template<typename U>
 			U* check_component_impl(Entity);
@@ -306,7 +302,14 @@ template<typename U>
 U& Glare::Ecs::Entity_manager<T...>::make_component
 (typename Glare::Ecs::Entity_manager<T...>::Stable_index e)
 {
-	return make_component_impl<U>(ents[e]);
+	using Elem_type = Glare::Slot_map<Indexed_element<U>>;
+	auto& component_map = std::get<Elem_type>(components);
+	auto& component_ptr = std::get<Elem_type::Stable_index>(ents[e].ptr);
+
+	if (!component_map.is_valid(component_ptr)) {
+		component_ptr = component_map.add(Indexed_element<U>{U{}, e});
+	}
+	return component_map[component_ptr].val;
 }
 
 template<typename... T>
@@ -359,21 +362,6 @@ U& Glare::Ecs::Entity_manager<T...>::component_impl
 {
 	return std::get<Glare::Slot_map<Indexed_element<U>>>(components)
 		[std::get<Slot_map<Indexed_element<U>>::Stable_index>(e.ptr)].val;
-}
-
-template<typename... T>
-template<typename U>
-U& Glare::Ecs::Entity_manager<T...>::make_component_impl
-(typename Glare::Ecs::Entity_manager<T...>::Entity e)
-{
-	if (!std::get<Glare::Slot_map<Indexed_element<U>>>(components)
-		.is_valid(std::get<Glare::Slot_map<Indexed_element<U>>::Stable_index>(e.ptr)))
-	{
-		std::get<Glare::Slot_map<Indexed_element<U>>::Stable_index>(e.ptr).val
-			= std::get<Glare::Slot_map<Indexed_element<U>>>(components).add();
-	}
-	return std::get<Glare::Slot_map<U>>(components)
-		[std::get<Slot_map<U>::Stable_index>(e.ptr)];
 }
 
 template<typename... T>

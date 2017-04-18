@@ -17,18 +17,18 @@ TEST(EntityManager, Constructor)
 	auto p3 = em.add();
 	auto p4 = em.add();
 
-	em.component<TestA>(p1).s = "1 TestA";
-	em.component<TestC>(p1).s = "1 TestC";
+	em.make_component<TestA>(p1).s = "1 TestA";
+	em.make_component<TestC>(p1).s = "1 TestC";
 
-	em.component<TestA>(p2) = {"2 TestA"};
-	em.component<TestB>(p2) = {"2 TestB"};
+	em.make_component<TestA>(p2) = {"2 TestA"};
+	em.make_component<TestB>(p2) = {"2 TestB"};
 
-	em.component<TestB>(p3) = {"3 TestB"};
-	em.component<TestC>(p3) = {"3 TestC"};
+	em.make_component<TestB>(p3) = {"3 TestB"};
+	em.make_component<TestC>(p3) = {"3 TestC"};
 
-	em.component<TestA>(p4).s = "4 TestA";
-	em.component<TestB>(p4).s = "4 TestB";
-	em.component<TestC>(p4).s = "4 TestC";
+	em.make_component<TestA>(p4).s = "4 TestA";
+	em.make_component<TestB>(p4).s = "4 TestB";
+	em.make_component<TestC>(p4).s = "4 TestC";
 
 	/*
 		   p1 p2 p3 p4
