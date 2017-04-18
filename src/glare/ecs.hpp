@@ -106,7 +106,7 @@ namespace Glare {
 			template<typename... U>
 			bool has_component(Stable_const_index) const;
 			template<typename... U>
-			bool has_component(typename Slot_map<Entity>::Stable_index);
+			bool has_component(Stable_index) const;
 
 			// TODO: variadic overloads
 			template<typename U>
@@ -280,16 +280,19 @@ template<typename... U>
 bool Glare::Ecs::Entity_manager<T...>::has_component
 (typename Glare::Ecs::Entity_manager<T...>::Stable_const_index e) const
 {
-	return has_component_impl<true, U...>(ents[e]);
+	using Stable_const_index =
+		Glare::Slot_map<Glare::Ecs::Entity_manager<T...>::Entity>::Stable_const_index;
+	return has_component_impl<false, U...>(ents[Stable_const_index {e}]);
 }
 
 template<typename... T>
 template<typename... U>
 bool Glare::Ecs::Entity_manager<T...>::has_component
-(typename /*Glare::Ecs::Entity_manager<T...>::Stable_index*/
-Glare::Slot_map<typename Glare::Ecs::Entity_manager<T...>::Entity>::Stable_index e)
+(typename Glare::Ecs::Entity_manager<T...>::Stable_index e) const
 {
-	return has_component_impl<false, U...>(ents[e]);
+	using Stable_const_index =
+		Glare::Slot_map<Glare::Ecs::Entity_manager<T...>::Entity>::Stable_const_index;
+	return has_component_impl<false, U...>(ents[Stable_const_index {e}]);
 }
 
 template<typename... T>
