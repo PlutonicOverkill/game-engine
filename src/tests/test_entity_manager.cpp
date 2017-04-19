@@ -45,13 +45,20 @@ TEST(EntityManager, Constructor)
 	// has_component(): return true if component exists
 
 	for (auto x : em.filter()) { // loop over any components
+		auto p = em.check_component<TestA>(x);
+		bool b = em.has_component<TestB>(x);
 	}
 
 	for (auto x : em.filter<TestA>()) { // loop over just TestAs
-
+		auto p = em.component<TestA>(x);
+		bool b = em.has_component<TestB>(x);
+		auto q = em.check_component<TestA>(x);
+		auto m = em.make_component<TestC>(x);
 	}
 
 	for (auto x : em.filter<TestA, TestB>()) { // loop over TestAs and TestBs
-
+		auto p = em.component<TestA>(x);
+		auto q = em.component<TestB>(x);
+		auto m = em.make_component<TestC>(x);
 	}
 }
