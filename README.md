@@ -1,7 +1,7 @@
 # GLARE
-[![AppVeyor](https://ci.appveyor.com/api/projects/status/3bu10drfllhwx89q/branch/master?svg=true)](https://ci.appveyor.com/project/PlutonicOverkill/glare/branch/master)
+[![AppVeyor](https://ci.appveyor.com/api/projects/status/3bu10drfllhwx89q/branch/ecs?svg=true)](https://ci.appveyor.com/project/PlutonicOverkill/glare/branch/ecs)
 
-[Latest autobuild](https://ci.appveyor.com/api/projects/PlutonicOverkill/glare/artifacts/build64/bin/Glare.zip?branch=master&job=Configuration%3A+Release)
+[Latest autobuild](https://ci.appveyor.com/api/projects/PlutonicOverkill/glare/artifacts/build64/bin/Glare.zip?branch=ecs&job=Configuration%3A+Release)
 
 Graphics Library And Rendering Engine
 
