@@ -57,6 +57,17 @@ namespace Glare {
 			using Stable_index = typename Slot_map<Entity>::template Index_base<false>;
 			using Stable_const_index = typename Slot_map<Entity>::template Index_base<true>;
 
+			// needed to deal with range-for implicit dereference
+			template<bool Is_const>
+			class Entity_proxy {
+
+			};
+
+			template<bool Is_const>
+			class Entity_proxy_one {
+
+			};
+
 			template<typename... U>
 			class Range {
 			public:
@@ -137,9 +148,11 @@ namespace Glare {
 				Entity_manager* ptr;
 			}; // Range_one
 
-			template<typename... U>
-			std::conditional_t<sizeof...(U) == 1,
-				Range_one<U...>, Range<U...>> filter();
+			template<typename... U, typename std::enable_if_t<(sizeof...(U) > 1), int> = 0>
+			Range<U...> filter(); // more than one element
+			template<typename U>
+			Range_one<U> filter(); // single element
+			Range<> filter(); // no elements
 
 			Stable_index add();
 
@@ -200,14 +213,26 @@ Glare::Ecs::Entity_manager<T...>::Range<U...>::Range
 {}
 
 template<typename... T>
-template<typename... U>
-std::conditional_t<sizeof...(U) == 1,
-	Glare::Ecs::Entity_manager<T...>::Range_one<U...>,
-	Glare::Ecs::Entity_manager<T...>::Range<U...>> Glare::Ecs::Entity_manager<T...>::filter()
+template<typename... U, typename std::enable_if_t<(sizeof...(U) > 1), int>>
+Glare::Ecs::Entity_manager<T...>::Range<U...>
+Glare::Ecs::Entity_manager<T...>::filter()
 {
-	return std::conditional_t<sizeof...(U) == 1,
-		Glare::Ecs::Entity_manager<T...>::Range_one<U...>,
-		Glare::Ecs::Entity_manager<T...>::Range<U...>>{this};
+	return Glare::Ecs::Entity_manager<T...>::Range<U...>{this};
+}
+
+template<typename... T>
+template<typename U>
+Glare::Ecs::Entity_manager<T...>::Range_one<U>
+Glare::Ecs::Entity_manager<T...>::filter()
+{
+	return Glare::Ecs::Entity_manager<T...>::Range_one<U>{this};
+}
+
+template<typename... T>
+	Glare::Ecs::Entity_manager<T...>::Range<>
+	Glare::Ecs::Entity_manager<T...>::filter()
+{
+	return Glare::Ecs::Entity_manager<T...>::Range<>{this};
 }
 
 template<typename... T>
@@ -215,8 +240,8 @@ template<typename... U>
 template<bool Is_const>
 Glare::Ecs::Entity_manager<T...>::Range<U...>::Iterator_base<Is_const>::Iterator_base
 (Glare::Ecs::Entity_manager<T...>* ptr,
- typename Slot_map<Entity>::template Iterator_base<Is_const> iter,
- typename Slot_map<Entity>::template Iterator_base<Is_const> end)
+	typename Slot_map<Entity>::template Iterator_base<Is_const> iter,
+	typename Slot_map<Entity>::template Iterator_base<Is_const> end)
 	:ptr {ptr},
 	iter {iter},
 	end {end}
@@ -318,7 +343,7 @@ template<typename U>
 template<bool Is_const>
 Glare::Ecs::Entity_manager<T...>::Range_one<U>::Iterator_base<Is_const>::Iterator_base
 (Glare::Ecs::Entity_manager<T...>* ptr,
- typename Slot_map<Indexed_element<U>>::template Iterator_base<Is_const> iter)
+	typename Slot_map<Indexed_element<U>>::template Iterator_base<Is_const> iter)
 	:ptr {ptr},
 	iter {iter}
 {}
@@ -530,7 +555,7 @@ const U* Glare::Ecs::Entity_manager<T...>::check_component_impl
 	if (std::get<Glare::Slot_map<Indexed_element<U>>>(components)
 		.is_valid(std::get<Glare::Slot_map<Indexed_element<U>>::Stable_index>(e.ptr))) {
 		return &(std::get<Glare::Slot_map<Indexed_element<U>>>(components)
-				 [std::get<Glare::Slot_map<Indexed_element<U>>::Stable_index>(e.ptr)].val);
+			[std::get<Glare::Slot_map<Indexed_element<U>>::Stable_index>(e.ptr)].val);
 	} else {
 		return nullptr;
 	}
@@ -544,7 +569,7 @@ U* Glare::Ecs::Entity_manager<T...>::check_component_impl
 	if (std::get<Glare::Slot_map<Indexed_element<U>>>(components)
 		.is_valid(std::get<Glare::Slot_map<Indexed_element<U>>::Stable_index>(e.ptr))) {
 		return &(std::get<Glare::Slot_map<Indexed_element<U>>>(components)
-				 [std::get<Glare::Slot_map<Indexed_element<U>>::Stable_index>(e.ptr)].val);
+			[std::get<Glare::Slot_map<Indexed_element<U>>::Stable_index>(e.ptr)].val);
 	} else {
 		return nullptr;
 	}
