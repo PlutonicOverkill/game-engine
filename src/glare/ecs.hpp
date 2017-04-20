@@ -118,9 +118,8 @@ namespace Glare {
 			template<bool Iter_const>
 			class Iterator_base {
 			public:
-				Iterator_base(std::conditional_t<Iter_const,
-					const Entity_manager*, Entity_manager*>,
-					typename Slot_map<Indexed_element<U>>::template Iterator_base<Iter_const>);
+				explicit Iterator_base
+					(typename Slot_map<Indexed_element<U>>::template Iterator_base<Iter_const>);
 
 				Iterator_base& operator++();
 
@@ -131,9 +130,6 @@ namespace Glare {
 
 				Entity_base<Iter_const> operator*();
 			private:
-				std::conditional_t<Iter_const,
-					const Entity_manager*, Entity_manager*> ptr;
-
 				typename Slot_map<Indexed_element<U>>::template Iterator_base<Iter_const> iter;
 			}; // iterator_base
 
@@ -407,11 +403,8 @@ template<typename... T>
 template<bool Is_const, typename U>
 template<bool Iter_const>
 Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::Iterator_base<Iter_const>::Iterator_base
-(std::conditional_t<Iter_const,
-	const Entity_manager*, Entity_manager*> ptr,
-	typename Slot_map<Indexed_element<U>>::template Iterator_base<Iter_const> iter)
-	:ptr {ptr},
-	iter {iter}
+(typename Slot_map<Indexed_element<U>>::template Iterator_base<Iter_const> iter)
+	:iter {iter}
 {}
 
 template<typename... T>
@@ -440,7 +433,6 @@ template<bool V>
 bool Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::Iterator_base<Iter_const>::operator==(
 	Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::Iterator_base<V> rhs) const
 {
-	// probably don't need to compare pointers
 	return iter == rhs.iter;
 }
 
@@ -451,7 +443,6 @@ template<bool V>
 bool Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::Iterator_base<Iter_const>::operator!=(
 	Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::Iterator_base<V> rhs) const
 {
-	// probably don't need to compare pointers
 	return !(*this == rhs);
 }
 
@@ -460,7 +451,8 @@ template<bool Is_const, typename U>
 typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::iterator
 Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::begin()
 {
-	return {ptr, ptr->ents.begin(), ptr->ents.end()};
+	using iterator = typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::iterator;
+	return iterator {ptr->ents.begin()};
 }
 
 template<typename... T>
@@ -476,7 +468,8 @@ template<bool Is_const, typename U>
 typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::const_iterator
 Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::cbegin() const
 {
-	return {ptr, ptr->ents.cbegin(), ptr->ents.cend()};
+	using iterator = typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::iterator;
+	return iterator {ptr->ents.cbegin()};
 }
 
 template<typename... T>
@@ -484,7 +477,8 @@ template<bool Is_const, typename U>
 typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::iterator
 Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::end()
 {
-	return {ptr, ptr->ents.end(), ptr->ents.end()};
+	using iterator = typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::iterator;
+	return iterator {ptr->ents.end()};
 }
 
 template<typename... T>
@@ -500,7 +494,8 @@ template<bool Is_const, typename U>
 typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::const_iterator
 Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::cend() const
 {
-	return {ptr, ptr->ents.cend(), ptr->ents.cend()};
+	using iterator = typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::iterator;
+	return iterator {ptr->ents.cend()};
 }
 
 template<typename... T>
