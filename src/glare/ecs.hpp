@@ -41,9 +41,6 @@ namespace Glare {
 
 		template<bool Is_const>
 		class Entity_base {
-		public:
-			friend class Entity_manager;
-		private:
 			template<typename U>
 			using Ptr_type = typename Slot_map<Indexed_element<U>>::template Index_base<Is_const>;
 			// safe pointer to each component type
@@ -55,14 +52,17 @@ namespace Glare {
 		using Stable_index = typename Slot_map<Entity>::template Index_base<false>;
 		using Stable_const_index = typename Slot_map<Entity>::template Index_base<true>;
 
-		// should  have the same interface as Index_base
+		// TODO: should have the same interface as Index_base
 		template<bool Is_const, typename U>
-		class Component_handle {
-		public:
-
-		private:
+		class Component_handle_base {
+			friend class Entity_manager;
 			typename Slot_map<Indexed_element<U>>::template Index_base<Is_const> index;
 		};
+
+		template<typename U>
+		using Component_handle = typename Component_handle_base<false, U>;
+		template<typename U>
+		using Component_handle_const = typename Component_handle_base<true, U>;
 
 		template<bool Is_const, typename... U>
 		class Range_base {
@@ -149,13 +149,13 @@ namespace Glare {
 		}; // Component_range_base
 
 		template<typename... U>
-		using Range = Range_base<false, U...>;
+		using Range = typename Range_base<false, U...>;
 		template<typename... U>
-		using Range_const = Range_base<true, U...>;
+		using Range_const = typename Range_base<true, U...>;
 		template<typename U>
-		using Component_range = Component_range_base<false, U...>;
+		using Component_range = typename Component_range_base<false, U...>;
 		template<typename U>
-		using Component_range_const = Component_range_base<true, U...>;
+		using Component_range_const = typename Component_range_base<true, U...>;
 
 		template<typename... U, typename std::enable_if_t<(sizeof...(U) > 1), int> = 0>
 		Range<U...> filter(); // more than one element
@@ -180,6 +180,11 @@ namespace Glare {
 		template<typename... U>
 		bool has_component(Stable_index) const;
 
+		template<typename... U, typename V>
+		bool has_component(Component_handle<V>) const;
+		template<typename... U, typename V>
+		bool has_component(Component_handle_const<V>) const;
+
 		// TODO: variadic overloads
 		template<typename U>
 		const U& component(Stable_const_index) const;
@@ -187,14 +192,30 @@ namespace Glare {
 		U& component(Stable_index);
 
 		// TODO: variadic overloads
+		template<typename U, typename V>
+		const U& component(Component_handle_const<V>) const;
+		template<typename U, typename V>
+		U& component(Component_handle<V>);
+
+		// TODO: variadic overloads
 		template<typename U>
 		U& make_component(Stable_index);
+
+		// TODO: variadic overloads
+		template<typename U, typename V>
+		U& make_component(Component_handle<V>);
 
 		// TODO: variadic overloads
 		template<typename U>
 		const U* check_component(Stable_const_index) const;
 		template<typename U>
 		U* check_component(Stable_index);
+
+		// TODO: variadic overloads
+		template<typename U, typename V>
+		const U* check_component(Component_handle_const<V>) const;
+		template<typename U, typename V>
+		U* check_component(Component_handle<V>);
 	private:
 		template<bool Is_const, typename First, typename... Rest>
 		bool has_component_impl(Index_base<Is_const>) const;
