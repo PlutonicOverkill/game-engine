@@ -10,7 +10,7 @@ struct TestC { std::string s; };
 
 TEST(EntityManager, Constructor)
 {
-	Glare::Ecs::Entity_manager<TestA, TestB, TestC> em;
+	Glare::Entity_manager<TestA, TestB, TestC> em;
 
 	auto p1 = em.add();
 	auto p2 = em.add();
@@ -62,7 +62,7 @@ TEST(EntityManager, Constructor)
 		auto m = em.make_component<TestC>(x);*/
 	}
 
-	const Glare::Ecs::Entity_manager<TestA, TestB, TestC> cem;
+	const Glare::Entity_manager<TestA, TestB, TestC> cem;
 
 	for (auto x : cem.filter()) {}
 
