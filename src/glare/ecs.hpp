@@ -63,7 +63,7 @@ namespace Glare {
 			public:
 
 			private:
-				typename Slot_map<Indexed_element<U>>::Index_base<Is_const> index;
+				typename Slot_map<Indexed_element<U>>::template Index_base<Is_const> index;
 			};
 
 			template<bool Is_const, typename... U>
@@ -229,7 +229,7 @@ namespace Glare {
 
 template<typename... T>
 template<bool Is_const, typename... U>
-Glare::Ecs::Entity_manager<T...>::Range_base<U...>::Range_base
+Glare::Ecs::Entity_manager<T...>::Range_base<Is_const, U...>::Range_base
 (std::conditional_t<Is_const,
 	const Entity_manager*, Entity_manager*> ptr)
 	:ptr {ptr}
@@ -237,7 +237,7 @@ Glare::Ecs::Entity_manager<T...>::Range_base<U...>::Range_base
 
 template<typename... T>
 template<bool Is_const, typename U>
-Glare::Ecs::Entity_manager<T...>::Component_range_base<U>::Component_range_base
+Glare::Ecs::Entity_manager<T...>::Component_range_base<Is_const, U>::Component_range_base
 (std::conditional_t<Is_const,
 	const Entity_manager*, Entity_manager*> ptr)
 	: ptr {ptr}
@@ -305,8 +305,8 @@ Glare::Ecs::Entity_manager<T...>::Range_base<Is_const, U...>::Iterator_base<Iter
 template<typename... T>
 template<bool Is_const, typename... U>
 template<bool Iter_const>
-Glare::Ecs::Entity_manager<T...>::Range_base<Is_const, U...>::Iterator_base<Iter_const>::operator++()
 Glare::Ecs::Entity_manager<T...>::Range_base<Is_const, U...>::Iterator_base<Iter_const>&
+Glare::Ecs::Entity_manager<T...>::Range_base<Is_const, U...>::Iterator_base<Iter_const>::operator++()
 {
 	using Stable_const_index =
 		Glare::Slot_map<Glare::Ecs::Entity_manager<T...>::Entity>::Stable_const_index;
@@ -419,7 +419,7 @@ Glare::Ecs::Entity_manager<T...>::Component_range_base<Is_const, U>::Iterator_ba
 template<typename ...T>
 template<bool Is_const, typename U>
 template<bool Iter_const>
-typename Glare::Ecs::Entity_manager<T...>::Entity_base<Is_const>
+typename Glare::Ecs::Entity_manager<T...>::Entity_base<Iter_const>
 Glare::Ecs::Entity_manager<T...>::Component_range_base<Is_const, U>::Iterator_base<Iter_const>::operator*()
 {
 	return *iter;
