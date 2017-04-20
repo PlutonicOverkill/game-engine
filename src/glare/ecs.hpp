@@ -176,6 +176,9 @@ namespace Glare {
 			Component_range_const<U> filter() const; // single element
 			Range_const<> filter() const; // no elements
 
+			template<typename... U>
+			Range_const<U...> cfilter() const;
+
 			Stable_index add();
 
 			template<typename... U>
@@ -267,6 +270,14 @@ Glare::Ecs::Entity_manager<T...>::filter()
 }
 
 template<typename... T>
+template<typename... U>
+typename Glare::Ecs::Entity_manager<T...>::Range_const<U...>
+Glare::Ecs::Entity_manager<T...>::cfilter() const
+{
+	return filter<U...>();
+}
+
+template<typename... T>
 template<typename... U, typename std::enable_if_t<(sizeof...(U) > 1), int>>
 typename Glare::Ecs::Entity_manager<T...>::Range_const<U...>
 Glare::Ecs::Entity_manager<T...>::filter() const
@@ -277,14 +288,14 @@ Glare::Ecs::Entity_manager<T...>::filter() const
 template<typename... T>
 template<typename U>
 typename Glare::Ecs::Entity_manager<T...>::Component_range_const<U>
-	Glare::Ecs::Entity_manager<T...>::filter() const
+Glare::Ecs::Entity_manager<T...>::filter() const
 {
 	return Glare::Ecs::Entity_manager<T...>::Component_range_const<U>{this};
 }
 
 template<typename... T>
 typename Glare::Ecs::Entity_manager<T...>::Range_const<>
-	Glare::Ecs::Entity_manager<T...>::filter() const
+Glare::Ecs::Entity_manager<T...>::filter() const
 {
 	return Glare::Ecs::Entity_manager<T...>::Range_const<>{this};
 }
