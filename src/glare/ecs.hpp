@@ -346,7 +346,7 @@ template<bool Iter_const>
 typename Glare::Entity_manager<T...>::Index_base<Iter_const>
 Glare::Entity_manager<T...>::Range_base<Is_const, U...>::Iterator_base<Iter_const>::operator*()
 {
-	return *iter;
+	return Glare::Entity_manager<T...>::Index_base<Iter_const> {iter};
 }
 
 template<typename... T>
@@ -378,7 +378,7 @@ std::conditional_t<Is_const,
 	typename Glare::Entity_manager<T...>::Range_base<Is_const, U...>::iterator>
 Glare::Entity_manager<T...>::Range_base<Is_const, U...>::begin() const
 {
-	return cbegin();
+	return {ptr, ptr->ents.begin(), ptr->ents.end()};
 }
 
 template<typename... T>
@@ -396,7 +396,7 @@ std::conditional_t<Is_const,
 	typename Glare::Entity_manager<T...>::Range_base<Is_const, U...>::iterator>
 Glare::Entity_manager<T...>::Range_base<Is_const, U...>::end() const
 {
-	return cend();
+	return {ptr, ptr->ents.end(), ptr->ents.end()};
 }
 
 template<typename... T>
@@ -461,7 +461,8 @@ std::conditional_t<Is_const,
 	typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::iterator>
 Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::begin() const
 {
-	return cbegin();
+	using iterator = typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::iterator;
+	return iterator {ptr->ents.begin()};
 }
 
 template<typename... T>
@@ -480,7 +481,8 @@ std::conditional_t<Is_const,
 	typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::iterator>
 Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::end() const
 {
-	return cend();
+	using iterator = typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::iterator;
+	return iterator {ptr->ents.end()};
 }
 
 template<typename... T>
@@ -603,7 +605,7 @@ bool Glare::Entity_manager<T...>::has_component_impl
 {
 	return std::get<Glare::Slot_map<Indexed_element<First>>>(components).is_valid
 	(std::get<Glare::Slot_map<Indexed_element<First>>::Stable_index>(ents[e].ptr))
-		&& has_component_impl<Is_const, Rest...>(e);
+		&& has_component_impl<Rest...>(e);
 }
 
 template<typename... T>
