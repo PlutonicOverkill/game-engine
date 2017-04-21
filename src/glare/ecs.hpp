@@ -551,7 +551,7 @@ bool Glare::Entity_manager<T...>::has_component
 {
 	using Component_handle_const =
 		Glare::Entity_manager<T...>::Component_handle_const;
-	return has_component_impl<U...>(Component_handle_const {e});
+	return has_component_impl<V, U...>(Component_handle_const {e});
 }
 
 template<typename... T>
@@ -559,7 +559,7 @@ template<typename... U, typename V>
 bool Glare::Entity_manager<T...>::has_component
 (Glare::Entity_manager<T...>::Component_handle_const<V> e) const
 {
-	return has_component_impl<U...>(e);
+	return has_component_impl<V, U...>(e);
 }
 
 template<typename... T>
