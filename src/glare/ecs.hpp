@@ -24,11 +24,7 @@ namespace Glare {
 	// T is a list of all the component types usable by Entities
 	template<typename... T>
 	class Entity_manager {
-		template<bool Is_const>
-		class Entity_base;
-
-		using Entity = typename Entity_base<false>;
-		using Const_entity = typename Entity_base<true>;
+		struct Entity;
 
 		// only a nested class to avoid cyclic dependencies
 		template<typename U>
@@ -36,18 +32,17 @@ namespace Glare {
 			U val;
 			typename Slot_map<Entity>::Stable_index index;
 		};
+
+		struct Entity {
+			template<typename U>
+			using Elem_type = typename Slot_map<Indexed_element<U>>::Stable_index;
+			using Ptr_type = std::tuple<Elem_type<T>...>;
+
+			// safe pointer to each component type
+			typename Ptr_type ptr;
+		}; // Entity
 	public:
 		Entity_manager() = default;
-
-		template<bool Is_const>
-		class Entity_base {
-			friend class Entity_manager;
-
-			template<typename U>
-			using Ptr_type = typename Slot_map<Indexed_element<U>>::template Index_base<Is_const>;
-			// safe pointer to each component type
-			std::tuple<Ptr_type<T>...> ptr;
-		}; // Entity_base
 
 		template<bool Is_const>
 		using Index_base = typename Slot_map<Entity>::template Index_base<Is_const>;
@@ -87,7 +82,7 @@ namespace Glare {
 				template<bool V>
 				bool operator!=(Iterator_base<V>) const;
 
-				Entity_base<Iter_const> operator*();
+				Index_base<Iter_const> operator*();
 			private:
 				std::conditional_t<Iter_const,
 					const Entity_manager*, Entity_manager*> ptr;
@@ -128,7 +123,7 @@ namespace Glare {
 				template<bool V>
 				bool operator!=(Iterator_base<V>) const;
 
-				Entity_base<Iter_const> operator*();
+				Component_handle_base<Iter_const, U> operator*();
 			private:
 				typename Slot_map<Indexed_element<U>>::template Iterator_base<Iter_const> iter;
 			}; // iterator_base
@@ -360,7 +355,7 @@ Glare::Entity_manager<T...>::Range_base<Is_const, U...>::Iterator_base<Iter_cons
 template<typename ...T>
 template<bool Is_const, typename... U>
 template<bool Iter_const>
-typename Glare::Entity_manager<T...>::Entity_base<Iter_const>
+typename Glare::Entity_manager<T...>::Index_base<Iter_const>
 Glare::Entity_manager<T...>::Range_base<Is_const, U...>::Iterator_base<Iter_const>::operator*()
 {
 	return *iter;
@@ -445,7 +440,7 @@ Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::Iterator_base<It
 template<typename ...T>
 template<bool Is_const, typename U>
 template<bool Iter_const>
-typename Glare::Entity_manager<T...>::Entity_base<Iter_const>
+typename Glare::Entity_manager<T...>::Component_handle_base<Iter_const, U>
 Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::Iterator_base<Iter_const>::operator*()
 {
 	return *iter;
