@@ -30,6 +30,15 @@ TEST(EntityManager, Constructor)
 	em.make_component<TestB>(p4).s = "4 TestB";
 	em.make_component<TestC>(p4).s = "4 TestC";
 
+	typename Glare::Entity_manager<TestA, TestB, TestC>::Range<> range = em.filter();
+	typename Glare::Entity_manager<TestA, TestB, TestC>::Range_const<> crange = em.cfilter();
+
+	typename Glare::Entity_manager<TestA, TestB, TestC>::Component_range<TestA> rangeA = em.filter<TestA>();
+	typename Glare::Entity_manager<TestA, TestB, TestC>::Component_range_const<TestA> crangeA = em.cfilter<TestA>();
+
+	typename Glare::Entity_manager<TestA, TestB, TestC>::Range<TestA, TestB> rangeAB = em.filter<TestA, TestB>();
+	typename Glare::Entity_manager<TestA, TestB, TestC>::Range_const<TestA, TestB> crangeAB = em.cfilter<TestA, TestB>();
+
 	/*
 		   p1 p2 p3 p4
 	TestA  x  x     x
@@ -44,29 +53,29 @@ TEST(EntityManager, Constructor)
 
 	// has_component(): return true if component exists
 
-	for (auto x : em.filter()) { // loop over any components
-		/*auto p = em.check_component<TestA>(x);
-		bool b = em.has_component<TestB>(x);*/
-	}
+	//for (auto x : em.filter()) { // loop over any components
+	//	/*auto p = em.check_component<TestA>(x);
+	//	bool b = em.has_component<TestB>(x);*/
+	//}
 
-	for (auto x : em.filter<TestA>()) { // loop over just TestAs
-		/*auto p = em.component<TestA>(x);
-		bool b = em.has_component<TestB>(x);
-		auto q = em.check_component<TestA>(x);
-		auto m = em.make_component<TestC>(x);*/
-	}
+	//for (auto x : em.filter<TestA>()) { // loop over just TestAs
+	//	/*auto p = em.component<TestA>(x);
+	//	bool b = em.has_component<TestB>(x);
+	//	auto q = em.check_component<TestA>(x);
+	//	auto m = em.make_component<TestC>(x);*/
+	//}
 
-	for (auto x : em.filter<TestA, TestB>()) { // loop over TestAs and TestBs
-		/*auto p = em.component<TestA>(x);
-		auto q = em.component<TestB>(x);
-		auto m = em.make_component<TestC>(x);*/
-	}
+	//for (auto x : em.filter<TestA, TestB>()) { // loop over TestAs and TestBs
+	//	/*auto p = em.component<TestA>(x);
+	//	auto q = em.component<TestB>(x);
+	//	auto m = em.make_component<TestC>(x);*/
+	//}
 
-	const Glare::Entity_manager<TestA, TestB, TestC> cem;
+	//const Glare::Entity_manager<TestA, TestB, TestC> cem;
 
-	for (auto x : cem.filter()) {}
+	//for (auto x : cem.filter()) {}
 
-	for (auto x : cem.filter<TestA>()) {}
+	//for (auto x : cem.filter<TestA>()) {}
 
-	for (auto x : cem.filter<TestA, TestB>()) {}
+	//for (auto x : cem.filter<TestA, TestB>()) {}
 }
