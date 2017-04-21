@@ -6,6 +6,7 @@
 
 #include <tuple>
 #include <utility>
+#include <type_traits>
 
 namespace Glare {
 	namespace Ecs_impl {
@@ -229,6 +230,16 @@ namespace Glare {
 		template<typename... Rest,
 			typename = typename std::enable_if_t<sizeof...(Rest) == 0>>
 		bool has_component_impl(Stable_const_index) const;
+
+		template<typename U, typename First, typename... Rest,
+			typename std::enable_if_t<std::is_same_v<First, U>, int> = 0>
+		bool has_component_impl(Component_handle_const<U>) const;
+		template<typename U, typename First, typename... Rest,
+			typename std::enable_if_t<!std::is_same_v<First, U>, int> = 0>
+			bool has_component_impl(Component_handle_const<U>) const;
+		template<typename U, typename... Rest,
+			typename = typename std::enable_if_t<sizeof...(Rest) == 0>>
+		bool has_component_impl(Component_handle_const<U>) const;
 
 		Ecs_impl::Variadic_cont<Slot_map, Ecs_impl::Typelist<Indexed_element<T>...>> components;
 
@@ -540,7 +551,7 @@ bool Glare::Entity_manager<T...>::has_component
 {
 	using Component_handle_const =
 		Glare::Entity_manager<T...>::Component_handle_const;
-	return has_component_impl<false, U>(Component_handle_const {e});
+	return has_component_impl<U...>(Component_handle_const {e});
 }
 
 template<typename... T>
@@ -548,7 +559,7 @@ template<typename... U, typename V>
 bool Glare::Entity_manager<T...>::has_component
 (Glare::Entity_manager<T...>::Component_handle_const<V> e) const
 {
-	return has_component_impl<false, U>(e);
+	return has_component_impl<U...>(e);
 }
 
 template<typename... T>
@@ -626,6 +637,37 @@ template<typename... T>
 template<typename... Rest, typename>
 bool Glare::Entity_manager<T...>::has_component_impl
 (typename Glare::Entity_manager<T...>::Stable_const_index e) const
+{
+	return true;
+}
+
+template<typename... T>
+template<typename U, typename First, typename... Rest,
+	typename std::enable_if_t<std::is_same_v<First, U>, int>>
+bool Glare::Entity_manager<T...>::has_component_impl
+(typename Glare::Entity_manager<T...>::Component_handle_const<U> e) const
+{
+	return has_component_impl<U, Rest...>(e);
+}
+
+template<typename... T>
+template<typename U, typename First, typename... Rest,
+	typename std::enable_if_t<!std::is_same_v<First, U>, int>>
+bool Glare::Entity_manager<T...>::has_component_impl
+(typename Glare::Entity_manager<T...>::Component_handle_const<U> e) const
+{
+	auto entity_ptr =
+		std::get<Glare::Slot_map<Glare::Entity_manager<T...>::Indexed_element<U>>>(e)
+		[e.index].index;
+	return std::get<Glare::Slot_map<Indexed_element<First>>>(components).is_valid
+	(std::get<Glare::Slot_map<Indexed_element<First>>::Stable_index>(ents[entity_ptr].ptr))
+		&& has_component_impl<Rest...>(e);
+}
+
+template<typename... T>
+template<typename U, typename... Rest, typename>
+bool Glare::Entity_manager<T...>::has_component_impl
+(typename Glare::Entity_manager<T...>::Component_handle_const<U> e) const
 {
 	return true;
 }
