@@ -353,7 +353,7 @@ Glare::Entity_manager<T...>::Range_base<Is_const, U...>::Iterator_base<Iter_cons
 		Glare::Slot_map<Glare::Entity_manager<T...>::Entity>::Stable_const_index;
 	do {
 		++iter;
-	} while (iter != end && !ptr->has_component_impl<Iter_const, U...>(Stable_const_index {iter}));
+	} while (iter != end && !ptr->has_component_impl<U...>(Stable_const_index {iter}));
 	return *this;
 }
 
