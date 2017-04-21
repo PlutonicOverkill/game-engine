@@ -52,6 +52,10 @@ namespace Glare {
 		// TODO: should have the same interface as Index_base
 		template<bool Is_const, typename U>
 		class Component_handle_base {
+		public:
+			/*explicit*/ Component_handle_base
+				(typename Slot_map<Indexed_element<U>>::template Index_base<Is_const>);
+		private:
 			friend class Entity_manager;
 			typename Slot_map<Indexed_element<U>>::template Index_base<Is_const> index;
 		};
@@ -113,7 +117,7 @@ namespace Glare {
 			template<bool Iter_const>
 			class Iterator_base {
 			public:
-				explicit Iterator_base
+				/*explicit*/ Iterator_base
 					(typename Slot_map<Indexed_element<U>>::template Iterator_base<Iter_const>);
 
 				Iterator_base& operator++();
@@ -170,6 +174,13 @@ namespace Glare {
 		Range_const<> cfilter() const; // no elements
 
 		Stable_index add();
+		// TODO: buffered_add
+		// TODO: remove
+		// TODO: buffered_remove
+		// TODO: emplace_component
+		// TODO: remove_component
+		// TODO: buffered_add_component
+		// TODO: buffered_remove_component
 
 		template<typename... U>
 		bool has_component(Stable_const_index) const;
@@ -227,6 +238,13 @@ namespace Glare {
 
 
 /***** IMPLEMENTATION *****/
+
+template<typename... T>
+template<bool Is_const, typename U>
+Glare::Entity_manager<T...>::Component_handle_base<Is_const, U>::Component_handle_base
+(typename Glare::Slot_map<Glare::Entity_manager<T...>::Indexed_element<U>>::template Index_base<Is_const> index)
+	:index {index}
+{}
 
 template<typename... T>
 template<bool Is_const, typename... U>
@@ -431,7 +449,7 @@ template<bool Iter_const>
 typename Glare::Entity_manager<T...>::Component_handle_base<Iter_const, U>
 Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::Iterator_base<Iter_const>::operator*()
 {
-	return *iter;
+	return Slot_map<Indexed_element<U>>::template Index_base<Is_const> {iter};
 }
 
 template<typename... T>
@@ -461,8 +479,7 @@ std::conditional_t<Is_const,
 	typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::iterator>
 Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::begin() const
 {
-	using iterator = typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::iterator;
-	return iterator {ptr->ents.begin()};
+	return std::get<Glare::Slot_map<Indexed_element<U>>>(ptr->components).begin();
 }
 
 template<typename... T>
@@ -470,8 +487,7 @@ template<bool Is_const, typename U>
 typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::const_iterator
 Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::cbegin() const
 {
-	using iterator = typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::iterator;
-	return iterator {ptr->ents.cbegin()};
+	return std::get<Glare::Slot_map<Indexed_element<U>>>(ptr->components).cbegin();
 }
 
 template<typename... T>
@@ -481,8 +497,7 @@ std::conditional_t<Is_const,
 	typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::iterator>
 Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::end() const
 {
-	using iterator = typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::iterator;
-	return iterator {ptr->ents.end()};
+	return std::get<Glare::Slot_map<Indexed_element<U>>>(ptr->components).end();
 }
 
 template<typename... T>
@@ -490,8 +505,7 @@ template<bool Is_const, typename U>
 typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::const_iterator
 Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::cend() const
 {
-	using iterator = typename Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::iterator;
-	return iterator {ptr->ents.cend()};
+	return std::get<Glare::Slot_map<Indexed_element<U>>>(ptr->components).cend();
 }
 
 template<typename... T>

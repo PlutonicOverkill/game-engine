@@ -58,12 +58,12 @@ TEST(EntityManager, Constructor)
 	//	bool b = em.has_component<TestB>(x);*/
 	}
 
-	//for (auto x : em.filter<TestA>()) { // loop over just TestAs
+	for (auto x : em.filter<TestA>()) { // loop over just TestAs
 	//	/*auto p = em.component<TestA>(x);
 	//	bool b = em.has_component<TestB>(x);
 	//	auto q = em.check_component<TestA>(x);
 	//	auto m = em.make_component<TestC>(x);*/
-	//}
+	}
 
 	for (auto x : em.filter<TestA, TestB>()) { // loop over TestAs and TestBs
 	//	/*auto p = em.component<TestA>(x);
