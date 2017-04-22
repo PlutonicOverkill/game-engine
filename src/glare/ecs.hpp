@@ -226,24 +226,24 @@ namespace Glare {
 		template<typename U>
 		using Component_range_const = typename Component_range_base<true, U>;
 
-		template<typename... U, typename std::enable_if_t<(sizeof...(U) > 1), int> = 0>
-		Range<U...> filter(); // more than one element
+		template<typename U, typename V, typename... W>
+		Range<U, V, W...> filter();
 		template<typename U>
-		Component_range<U> filter(); // single element
-		Range<> filter(); // no elements
+		Component_range<U> filter();
+		Range<> filter();
 
 		// const versions
-		template<typename... U, typename std::enable_if_t<(sizeof...(U) > 1), int> = 0>
-		Range_const<U...> filter() const; // more than one element
+		template<typename U, typename V, typename... W>
+		Range_const<U, V, W...> filter() const;
 		template<typename U>
-		Component_range_const<U> filter() const; // single element
-		Range_const<> filter() const; // no elements
+		Component_range_const<U> filter() const;
+		Range_const<> filter() const;
 
-		template<typename... U, typename std::enable_if_t<(sizeof...(U) > 1), int> = 0>
-		Range_const<U...> cfilter() const; // more than one element
+		template<typename U, typename V, typename... W>
+		Range_const<U, V, W...> cfilter() const;
 		template<typename U>
-		Component_range_const<U> cfilter() const; // single element
-		Range_const<> cfilter() const; // no elements
+		Component_range_const<U> cfilter() const;
+		Range_const<> cfilter() const;
 
 		Stable_index add();
 		// TODO: buffered_add
@@ -329,11 +329,11 @@ Glare::Entity_manager<T...>::Component_range_base<Is_const, U>::Component_range_
 {}
 
 template<typename... T>
-template<typename... U, typename std::enable_if_t<(sizeof...(U) > 1), int>>
-typename Glare::Entity_manager<T...>::Range<U...>
+template<typename U, typename V, typename... W>
+typename Glare::Entity_manager<T...>::Range<U, V, W...>
 Glare::Entity_manager<T...>::filter()
 {
-	return Glare::Entity_manager<T...>::Range<U...>{this};
+	return Glare::Entity_manager<T...>::Range<U, V, W...>{this};
 }
 
 template<typename... T>
@@ -352,11 +352,11 @@ Glare::Entity_manager<T...>::filter()
 }
 
 template<typename... T>
-template<typename... U, typename std::enable_if_t<(sizeof...(U) > 1), int>>
-typename Glare::Entity_manager<T...>::Range_const<U...>
+template<typename U, typename V, typename... W>
+typename Glare::Entity_manager<T...>::Range_const<U, V, W...>
 Glare::Entity_manager<T...>::cfilter() const
 {
-	return Glare::Entity_manager<T...>::Range_const<U...>{this};
+	return Glare::Entity_manager<T...>::Range_const<U, V, W...>{this};
 }
 
 template<typename... T>
@@ -375,11 +375,11 @@ typename Glare::Entity_manager<T...>::Range_const<>
 }
 
 template<typename... T>
-template<typename... U, typename std::enable_if_t<(sizeof...(U) > 1), int>>
-typename Glare::Entity_manager<T...>::Range_const<U...>
+template<typename U, typename V, typename... W>
+typename Glare::Entity_manager<T...>::Range_const<U, V, W...>
 Glare::Entity_manager<T...>::filter() const
 {
-	return Glare::Entity_manager<T...>::Range_const<U...>{this};
+	return Glare::Entity_manager<T...>::Range_const<U, V, W...>{this};
 }
 
 template<typename... T>
