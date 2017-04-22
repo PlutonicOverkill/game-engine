@@ -63,10 +63,10 @@ namespace Glare {
 			bool has_component() const;
 
 			template<typename V,
-				typename std::enable_if_t<std::is_same_as_v<U, V>, int> = 0>
+				typename std::enable_if_t<std::is_same_v<U, V>, int> = 0>
 			std::conditional_t<Is_const, const V*, V*> check_component() const;
 			template<typename V,
-				typename std::enable_if_t<!std::is_same_as_v<U, V>, int> = 0>
+				typename std::enable_if_t<!std::is_same_v<U, V>, int> = 0>
 			std::conditional_t<Is_const, const V*, V*> check_component() const;
 
 			template<typename V>
@@ -76,10 +76,10 @@ namespace Glare {
 			V& make_component();
 		private:
 			template<typename First, typename... Rest,
-				typename std::enable_if_t<std::is_same_v<First, V>, int> = 0>
+				typename std::enable_if_t<std::is_same_v<First, U>, int> = 0>
 			bool has_component_impl() const;
 			template<typename First, typename... Rest,
-				typename std::enable_if_t<!std::is_same_v<First, V>, int> = 0>
+				typename std::enable_if_t<!std::is_same_v<First, U>, int> = 0>
 			bool has_component_impl() const;
 			template<typename... Rest,
 				typename = typename std::enable_if_t<sizeof...(Rest) == 0>>
@@ -595,7 +595,7 @@ bool Glare::Entity_manager<T...>::has_component
 template<typename... T>
 template<bool Is_const, typename U>
 template<typename... V>
-bool Glare::Entity_manager<T...>::Component_iterator_base<Is_const, V>::has_component() const
+bool Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::has_component() const
 {
 	return has_component_impl<V...>();
 }
@@ -711,7 +711,7 @@ bool Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::has_comp
 
 template<typename... T>
 template<bool Is_const, typename U>
-template<typename V, typename std::enable_if_t<std::is_same_as_v<U, V>, int>>
+template<typename V, typename std::enable_if_t<std::is_same_v<U, V>, int>>
 std::conditional_t<Is_const, const V*, V*>
 Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::check_component() const
 {
@@ -720,7 +720,7 @@ Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::check_compone
 
 template<typename... T>
 template<bool Is_const, typename U>
-template<typename V, typename std::enable_if_t<!std::is_same_as_v<U, V>, int>>
+template<typename V, typename std::enable_if_t<!std::is_same_v<U, V>, int>>
 std::conditional_t<Is_const, const V*, V*>
 Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::check_component() const
 {
