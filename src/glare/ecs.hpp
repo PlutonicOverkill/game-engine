@@ -61,6 +61,13 @@ namespace Glare {
 
 			template<typename... U>
 			bool has_component() const;
+			template<typename U>
+			std::conditional_t<Is_const, const U*, U*> check_component() const;
+			template<typename U>
+			std::conditional_t<Is_const, const U&, U&> component() const;
+			// put a static_assert(!Is_const) in here
+			template<typename U>
+			U& make_component();
 		private:
 			template<typename First, typename... Rest,
 				typename std::enable_if_t<std::is_same_v<First, U>, int> = 0>
@@ -85,6 +92,16 @@ namespace Glare {
 			(std::conditional_t<Is_const,
 				const Entity_manager*, Entity_manager*> ptr,
 			 typename Slot_map<Entity>::template Iterator_base<Is_const>);
+
+			template<typename... U>
+			bool has_component() const;
+			template<typename U>
+			std::conditional_t<Is_const, const U*, U*> check_component() const;
+			template<typename U>
+			std::conditional_t<Is_const, const U&, U&> component() const;
+			// put a static_assert(!Is_const) in here
+			template<typename U>
+			U& make_component();
 		private:
 			friend class Entity_manager;
 			std::conditional_t<Is_const,
@@ -233,30 +250,14 @@ namespace Glare {
 		U& component(Stable_index);
 
 		// TODO: variadic overloads
-		template<typename U, typename V>
-		const U& component(Component_iterator_const<V>) const;
-		template<typename U, typename V>
-		U& component(Component_iterator<V>);
-
-		// TODO: variadic overloads
 		template<typename U>
 		U& make_component(Stable_index);
-
-		// TODO: variadic overloads
-		template<typename U, typename V>
-		U& make_component(Component_iterator<V>);
 
 		// TODO: variadic overloads
 		template<typename U>
 		const U* check_component(Stable_const_index) const;
 		template<typename U>
 		U* check_component(Stable_index);
-
-		// TODO: variadic overloads
-		template<typename U, typename V>
-		const U* check_component(Component_iterator_const<V>) const;
-		template<typename U, typename V>
-		U* check_component(Component_iterator<V>);
 	private:
 		template<typename First, typename... Rest>
 		bool has_component_impl(Stable_const_index) const;

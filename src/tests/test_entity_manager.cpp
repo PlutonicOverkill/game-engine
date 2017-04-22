@@ -54,28 +54,28 @@ TEST(EntityManager, Constructor)
 	// has_component(): return true if component exists
 
 	for (auto x : em.filter()) { // loop over any components
-	//	/*auto p = em.check_component<TestA>(x);
-	//	bool b = em.has_component<TestB>(x);*/
+		auto p = x.check_component<TestA>();
+		bool b = x.has_component<TestB>();
 	}
 
 	for (auto x : em.filter<TestA>()) { // loop over just TestAs
-	//	/*auto p = em.component<TestA>(x);
-	//	bool b = em.has_component<TestB>(x);
-	//	auto q = em.check_component<TestA>(x);
-	//	auto m = em.make_component<TestC>(x);*/
+		auto p = x.component<TestA>();
+		bool b = x.has_component<TestB>();
+		auto q = x.check_component<TestA>();
+		auto m = x.make_component<TestC>();
 	}
 
 	for (auto x : em.filter<TestA, TestB>()) { // loop over TestAs and TestBs
-	//	/*auto p = em.component<TestA>(x);
-	//	auto q = em.component<TestB>(x);
-	//	auto m = em.make_component<TestC>(x);*/
+		auto p = x.component<TestA>();
+		auto q = x.component<TestB>();
+		auto m = x.make_component<TestC>();
 	}
 
 	const Glare::Entity_manager<TestA, TestB, TestC> cem;
 
 	for (auto x : cem.filter()) {}
 
-	//for (auto x : cem.filter<TestA>()) {}
+	for (auto x : cem.filter<TestA>()) {}
 
 	for (auto x : cem.filter<TestA, TestB>()) {}
 }
