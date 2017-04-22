@@ -69,7 +69,11 @@ namespace Glare {
 				typename std::enable_if_t<!std::is_same_v<U, V>, int> = 0>
 			std::conditional_t<Is_const, const V*, V*> check_component() const;
 
-			template<typename V>
+			template<typename V,
+				typename std::enable_if_t<std::is_same_v<U, V>, int> = 0>
+			std::conditional_t<Is_const, const V&, V&> component() const;
+			template<typename V,
+				typename std::enable_if_t<!std::is_same_v<U, V>, int> = 0>
 			std::conditional_t<Is_const, const V&, V&> component() const;
 
 			template<typename V,
@@ -769,6 +773,29 @@ V& Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::make_compo
 	if (!component_map.is_valid(component_ptr)) {
 		component_ptr = component_map.add({V {}, (*iter).index});
 	}
+	return component_map[component_ptr].val;
+}
+
+template<typename... T>
+template<bool Is_const, typename U>
+template<typename V, typename std::enable_if_t<std::is_same_v<U, V>, int>>
+std::conditional_t<Is_const, const V&, V&>
+Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::component() const
+{
+	return (*iter).val;
+}
+
+template<typename... T>
+template<bool Is_const, typename U>
+template<typename V, typename std::enable_if_t<!std::is_same_v<U, V>, int>>
+std::conditional_t<Is_const, const V&, V&>
+Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::component() const
+{
+	using Elem_type = Glare::Slot_map<Indexed_element<V>>;
+
+	auto& component_map = std::get<Elem_type>(ptr->components);
+	auto& component_ptr = std::get<Elem_type::Stable_index>(entity().ptr);
+
 	return component_map[component_ptr].val;
 }
 
