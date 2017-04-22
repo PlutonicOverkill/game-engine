@@ -61,8 +61,14 @@ namespace Glare {
 
 			template<typename... V>
 			bool has_component() const;
-			template<typename V>
+
+			template<typename V,
+				typename std::enable_if_t<std::is_same_as_v<U, V>, int> = 0>
 			std::conditional_t<Is_const, const V*, V*> check_component() const;
+			template<typename V,
+				typename std::enable_if_t<!std::is_same_as_v<U, V>, int> = 0>
+			std::conditional_t<Is_const, const V*, V*> check_component() const;
+
 			template<typename V>
 			std::conditional_t<Is_const, const V&, V&> component() const;
 			// put a static_assert(!Is_const) in here
@@ -705,11 +711,23 @@ bool Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::has_comp
 
 template<typename... T>
 template<bool Is_const, typename U>
-template<typename V>
+template<typename V, typename std::enable_if_t<std::is_same_as_v<U, V>, int>>
 std::conditional_t<Is_const, const V*, V*>
 Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::check_component() const
 {
+	return &component<V>();
+}
 
+template<typename... T>
+template<bool Is_const, typename U>
+template<typename V, typename std::enable_if_t<!std::is_same_as_v<U, V>, int>>
+std::conditional_t<Is_const, const V*, V*>
+Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::check_component() const
+{
+	if (has_component<V>())
+		return &component<V>();
+	else
+		return nullptr;
 }
 
 #endif // !GLARE_ECS_HPP
