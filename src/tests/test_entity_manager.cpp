@@ -36,8 +36,8 @@ TEST(EntityManager, Constructor)
 	typename Glare::Entity_manager<TestA, TestB, TestC>::Component_range<TestA> rangeA = em.filter<TestA>();
 	typename Glare::Entity_manager<TestA, TestB, TestC>::Component_range_const<TestA> crangeA = em.cfilter<TestA>();
 
-	typename Glare::Entity_manager<TestA, TestB, TestC>::Range<TestA, TestB> rangeAB = em.filter<TestA, TestB>();
-	typename Glare::Entity_manager<TestA, TestB, TestC>::Range_const<TestA, TestB> crangeAB = em.cfilter<TestA, TestB>();
+	Glare::Entity_manager<TestA, TestB, TestC>::Range<TestA, TestB> rangeAB = em.filter<TestA, TestB>();
+	Glare::Entity_manager<TestA, TestB, TestC>::Range_const<TestA, TestB> crangeAB = em.cfilter<TestA, TestB>();
 
 	/*
 		   p1 p2 p3 p4
