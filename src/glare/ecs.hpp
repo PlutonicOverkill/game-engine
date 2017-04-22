@@ -71,10 +71,16 @@ namespace Glare {
 
 			template<typename V>
 			std::conditional_t<Is_const, const V&, V&> component() const;
-			// put a static_assert(!Is_const) in here
-			template<typename V>
-			V& make_component();
+
+			template<typename V,
+				typename std::enable_if_t<std::is_same_v<U, V>, int> = 0>
+			V& make_component() const;
+			template<typename V,
+				typename std::enable_if_t<!std::is_same_v<U, V>, int> = 0>
+			V& make_component() const;
 		private:
+			Entity& entity() const;
+
 			template<typename First, typename... Rest,
 				typename std::enable_if_t<std::is_same_v<First, U>, int> = 0>
 			bool has_component_impl() const;
@@ -694,7 +700,7 @@ template<typename First, typename... Rest,
 	typename std::enable_if_t<!std::is_same_v<First, U>, int>>
 	bool Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::has_component_impl() const
 {
-	auto entity_index = ptr->ents[(*iter).index].ptr;
+	auto entity_index = entity().ptr;
 
 	return std::get<Glare::Slot_map<Indexed_element<First>>>(ptr->components).is_valid
 		(std::get<Glare::Slot_map<Indexed_element<First>>::Stable_index>(entity_index))
@@ -728,6 +734,42 @@ Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::check_compone
 		return &component<V>();
 	else
 		return nullptr;
+}
+
+template<typename... T>
+template<bool Is_const, typename U>
+typename Glare::Entity_manager<T...>::Entity&
+Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::entity() const
+{
+	return ptr->ents[(*iter).index];
+}
+
+template<typename... T>
+template<bool Is_const, typename U>
+template<typename V, typename std::enable_if_t<std::is_same_v<U, V>, int>>
+V& Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::make_component() const
+{
+	static_assert(!Is_const, "Cannot use make_component() on a const iterator");
+
+	return component<V>();
+}
+
+template<typename... T>
+template<bool Is_const, typename U>
+template<typename V, typename std::enable_if_t<!std::is_same_v<U, V>, int>>
+V& Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::make_component() const
+{
+	static_assert(!Is_const, "Cannot use make_component() on a const iterator");
+
+	using Elem_type = Glare::Slot_map<Indexed_element<V>>;
+
+	auto& component_map = std::get<Elem_type>(ptr->components);
+	auto& component_ptr = std::get<Elem_type::Stable_index>(entity().ptr);
+
+	if (!component_map.is_valid(component_ptr)) {
+		component_ptr = component_map.add({V {}, (*iter).index});
+	}
+	return component_map[component_ptr].val;
 }
 
 #endif // !GLARE_ECS_HPP
