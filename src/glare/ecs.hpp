@@ -109,16 +109,24 @@ namespace Glare {
 				const Entity_manager*, Entity_manager*> ptr,
 			 typename Slot_map<Entity>::template Iterator_base<Is_const>);
 
-			template<typename... U>
+			template<typename... V>
 			bool has_component() const;
-			template<typename U>
-			std::conditional_t<Is_const, const U*, U*> check_component() const;
-			template<typename U>
-			std::conditional_t<Is_const, const U&, U&> component() const;
-			// put a static_assert(!Is_const) in here
-			template<typename U>
-			U& make_component();
+
+			template<typename V>
+			std::conditional_t<Is_const, const V*, V*> check_component() const;
+
+			template<typename V>
+			std::conditional_t<Is_const, const V&, V&> component() const;
+
+			template<typename V>
+			V& make_component() const;
 		private:
+			template<typename First, typename... Rest>
+			bool has_component_impl() const;
+			template<typename... Rest,
+				typename = typename std::enable_if_t<sizeof...(Rest) == 0>>
+			bool has_component_impl() const;
+
 			friend class Entity_manager;
 			std::conditional_t<Is_const,
 				const Entity_manager*, Entity_manager*> ptr;
@@ -797,6 +805,32 @@ Glare::Entity_manager<T...>::Component_iterator_base<Is_const, U>::component() c
 	auto& component_ptr = std::get<Elem_type::Stable_index>(entity().ptr);
 
 	return component_map[component_ptr].val;
+}
+
+template<typename... T>
+template<bool Is_const>
+template<typename... V>
+bool Glare::Entity_manager<T...>::Entity_iterator_base<Is_const>::has_component() const
+{
+	return has_component_impl<V...>();
+}
+
+template<typename... T>
+template<bool Is_const>
+template<typename First, typename... Rest>
+bool Glare::Entity_manager<T...>::Entity_iterator_base<Is_const>::has_component_impl() const
+{
+	return std::get<Glare::Slot_map<Indexed_element<First>>>(ptr->components).is_valid
+	(std::get<Glare::Slot_map<Indexed_element<First>>::Stable_index>((*iter).ptr))
+		&& has_component_impl<Rest...>();
+}
+
+template<typename... T>
+template<bool Is_const>
+template<typename... Rest, typename>
+bool Glare::Entity_manager<T...>::Entity_iterator_base<Is_const>::has_component_impl() const
+{
+	return true;
 }
 
 #endif // !GLARE_ECS_HPP

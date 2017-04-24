@@ -55,7 +55,7 @@ TEST(EntityManager, Constructor)
 
 	for (auto x : em.filter()) { // loop over any components
 		// auto p = x.check_component<TestA>();
-		// bool b = x.has_component<TestB>();
+		bool b = x.has_component<TestB>();
 	}
 
 	for (auto x : em.filter<TestA>()) { // loop over just TestAs
