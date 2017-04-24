@@ -862,4 +862,23 @@ Glare::Entity_manager<T...>::Entity_iterator_base<Is_const>::component() const
 	return component_map[component_ptr].val;
 }
 
+template<typename... T>
+template<bool Is_const>
+template<typename V>
+V& Glare::Entity_manager<T...>::Entity_iterator_base<Is_const>::make_component() const
+{
+	static_assert(!Is_const, "Cannot use make_component() on a const iterator");
+
+	using Elem_type = Glare::Slot_map<Indexed_element<V>>;
+	using Entity_index = Glare::Slot_map<Glare::Entity_manager<T...>::Entity>::Stable_index;
+
+	auto& component_map = std::get<Elem_type>(ptr->components);
+	auto& component_ptr = std::get<Elem_type::Stable_index>((*iter).ptr);
+
+	if (!component_map.is_valid(component_ptr)) {
+		component_ptr = component_map.add({V {}, Entity_index{iter}});
+	}
+	return component_map[component_ptr].val;
+}
+
 #endif // !GLARE_ECS_HPP

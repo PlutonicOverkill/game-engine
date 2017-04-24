@@ -68,7 +68,7 @@ TEST(EntityManager, Constructor)
 	for (auto x : em.filter<TestA, TestB>()) { // loop over TestAs and TestBs
 		auto p = x.component<TestA>();
 		auto q = x.component<TestB>();
-		// auto m = x.make_component<TestC>();
+		auto m = x.make_component<TestC>();
 	}
 
 	const Glare::Entity_manager<TestA, TestB, TestC> cem;
