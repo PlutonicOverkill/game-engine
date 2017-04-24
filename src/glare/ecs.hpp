@@ -833,4 +833,19 @@ bool Glare::Entity_manager<T...>::Entity_iterator_base<Is_const>::has_component_
 	return true;
 }
 
+template<typename... T>
+template<bool Is_const>
+template<typename V>
+std::conditional_t<Is_const, const V*, V*>
+Glare::Entity_manager<T...>::Entity_iterator_base<Is_const>::check_component() const
+{
+	if (std::get<Glare::Slot_map<Indexed_element<V>>>(ptr->components)
+		.is_valid(std::get<Glare::Slot_map<Indexed_element<V>>::Stable_index>((*iter).ptr))) {
+		return &(std::get<Glare::Slot_map<Indexed_element<V>>>(ptr->components)
+				 [std::get<Glare::Slot_map<Indexed_element<V>>::Stable_index>((*iter).ptr)].val);
+	} else {
+		return nullptr;
+	}
+}
+
 #endif // !GLARE_ECS_HPP
