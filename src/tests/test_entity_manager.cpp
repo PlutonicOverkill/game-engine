@@ -66,8 +66,8 @@ TEST(EntityManager, Constructor)
 	}
 
 	for (auto x : em.filter<TestA, TestB>()) { // loop over TestAs and TestBs
-		// auto p = x.component<TestA>();
-		// auto q = x.component<TestB>();
+		auto p = x.component<TestA>();
+		auto q = x.component<TestB>();
 		// auto m = x.make_component<TestC>();
 	}
 

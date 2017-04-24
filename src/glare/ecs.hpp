@@ -848,4 +848,18 @@ Glare::Entity_manager<T...>::Entity_iterator_base<Is_const>::check_component() c
 	}
 }
 
+template<typename... T>
+template<bool Is_const>
+template<typename V>
+std::conditional_t<Is_const, const V&, V&>
+Glare::Entity_manager<T...>::Entity_iterator_base<Is_const>::component() const
+{
+	using Elem_type = Glare::Slot_map<Indexed_element<V>>;
+
+	auto& component_map = std::get<Elem_type>(ptr->components);
+	auto& component_ptr = std::get<Elem_type::Stable_index>((*iter).ptr);
+
+	return component_map[component_ptr].val;
+}
+
 #endif // !GLARE_ECS_HPP
